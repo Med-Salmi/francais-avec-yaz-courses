@@ -1,0 +1,67 @@
+:root {
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Categories Grid */
+.category-card {
+  background: white;
+  border-radius: 12px;
+  border: none;
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  height: 100%;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.category-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 1.8rem;
+}
+
+/* Category icon backgrounds - matching your original colors */
+.langue-bg {
+  background: linear-gradient(135deg, #4cc9f0, #4361ee);
+}
+.lecture-bg {
+  background: linear-gradient(135deg, #f72585, #b5179e);
+}
+.orale-bg {
+  background: linear-gradient(135deg, #38b000, #2d00a3);
+}
+.ecrite-bg {
+  background: linear-gradient(135deg, #ff9e00, #ff5400);
+}
+.resumes-bg {
+  background: linear-gradient(135deg, #7209b7, #3a0ca3);
+}
+.users-bg {
+  background: linear-gradient(135deg, #9d4edd, #560bad);
+}
+.texte-bg {
+  background: linear-gradient(135deg, #ef233c, #d80032);
+}
+
+.category-title {
+  color: #2b2d42;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  font-size: 1.3rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .category-card {
+    margin-bottom: 1rem;
+  }
+}

@@ -1,0 +1,111 @@
+/* Features */
+.features {
+  padding: 4rem 0;
+}
+
+.feature-card {
+  background: white;
+  border-radius: 15px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+  height: 100%;
+  text-align: center;
+  border: 1px solid #f0f0f0;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.feature-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 2rem;
+}
+
+.icon-1 {
+  background: linear-gradient(135deg, #4cc9f0, #4361ee);
+}
+.icon-2 {
+  background: linear-gradient(135deg, #f72585, #b5179e);
+}
+.icon-3 {
+  background: linear-gradient(135deg, #38b000, #2d00a3);
+}
+.icon-4 {
+  background: linear-gradient(135deg, #7209b7, #3a0ca3);
+}
+
+.feature-card h3 {
+  color: #2b2d42;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+/* Responsive adjustments for features */
+@media (max-width: 768px) {
+  .features {
+    padding: 3rem 0;
+  }
+
+  .feature-card {
+    margin-bottom: 1.5rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .feature-icon {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 1.2rem;
+    font-size: 1.75rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Tablet adjustments (768px - 1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .feature-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .feature-icon {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 1.2rem;
+    font-size: 1.75rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .feature-card p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+}
+
+/* Extra large desktop (≥ 1200px) - ensure 4 cards per row */
+@media (min-width: 1200px) {
+  .feature-card {
+    padding: 2.5rem 2rem;
+  }
+
+  .feature-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+  }
+}

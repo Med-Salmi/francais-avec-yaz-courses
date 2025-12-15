@@ -1,0 +1,126 @@
+/* login.css - Login page styles */
+
+/* IMPORTANT: Make these styles more specific to override Bootstrap */
+html body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  min-height: 100vh !important; /* Changed back to min-height */
+  display: flex !important;
+  align-items: center !important;
+  padding-top: 40px !important;
+  padding-bottom: 40px !important;
+  margin: 0 !important;
+}
+
+/* Remove our custom main styling, let Bootstrap handle it */
+main {
+  width: 100% !important;
+}
+
+/* Let Bootstrap handle the container/row/col system */
+/* Remove all our custom overrides for container, row, and col */
+
+/* Login card - EXACT match from original */
+.login-card {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  /* No width restrictions - let Bootstrap handle it */
+}
+
+.login-header {
+  background: linear-gradient(135deg, #4361ee, #3a0ca3);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Original header styles - no custom font sizing */
+.login-header h1 {
+  margin-bottom: 0.5rem;
+  /* Let Bootstrap handle the font size */
+}
+
+.login-header p {
+  margin-bottom: 0;
+  opacity: 0.9;
+}
+
+.login-body {
+  padding: 2rem;
+}
+
+/* Exact match for login button */
+.btn-login {
+  background: linear-gradient(135deg, #4361ee, #3a0ca3);
+  border: none;
+  color: white;
+  padding: 12px;
+  font-weight: 600;
+  width: 100%;
+  /* Original had no transition/hover effects */
+}
+
+.btn-login:hover {
+  background: linear-gradient(135deg, #3a0ca3, #4361ee);
+  color: white;
+  /* Original had no transform/box-shadow */
+}
+
+.back-home-link {
+  color: white;
+  text-decoration: none;
+  transition: opacity 0.3s;
+  display: inline-block;
+  margin-top: 2rem;
+}
+
+.back-home-link:hover {
+  opacity: 0.8;
+  color: white;
+}
+
+/* Original didn't have custom focus states */
+/* .form-control:focus {
+    border-color: #4361ee;
+    box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+} */
+
+.alert {
+  border-radius: 8px;
+  border: none;
+}
+
+/* Remove all our custom column width restrictions */
+/* Let Bootstrap's col-md-6 col-lg-5 work naturally */
+
+/* Responsive - minimal adjustments only */
+@media (max-width: 768px) {
+  html body {
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+  }
+
+  .login-header {
+    padding: 1.5rem;
+  }
+
+  .login-body {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  html body {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+  }
+
+  .login-header {
+    padding: 1.25rem;
+  }
+
+  .login-body {
+    padding: 1.25rem;
+  }
+}

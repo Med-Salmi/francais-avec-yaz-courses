@@ -1,0 +1,157 @@
+/* Ensure CSS variables are defined */
+:root {
+  --primary-color: #4361ee;
+  --secondary-color: #3a0ca3;
+  --success-color: #38b000;
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Rest of your CSS... */
+
+/* Exam Cards */
+.exam-card {
+  background: white;
+  border-radius: 12px;
+  border: none;
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  height: 100%;
+  overflow: hidden;
+}
+
+.exam-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.exam-header {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  padding: 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.exam-title {
+  color: #2b2d42;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.exam-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  margin-right: 0.5rem;
+}
+
+.exam-badge.level {
+  background: var(--primary-color);
+  color: white;
+}
+
+.exam-badge.year {
+  background: var(--success-color);
+  color: white;
+}
+
+.exam-body {
+  padding: 1.5rem;
+}
+
+.exam-description {
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.exam-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-download {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s;
+  text-align: center;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-download-exam {
+  background: var(--primary-color);
+  color: white;
+  border: 2px solid var(--primary-color);
+}
+
+.btn-download-exam:hover {
+  background: #3a56d4;
+  border-color: #3a56d4;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+}
+
+.btn-download-correction {
+  background: var(--success-color);
+  color: white;
+  border: 2px solid var(--success-color);
+}
+
+.btn-download-correction:hover {
+  background: #2d9a00;
+  border-color: #2d9a00;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(56, 176, 0, 0.3);
+}
+
+/* No Results */
+.no-results {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.no-results-icon {
+  font-size: 4rem;
+  color: #dee2e6;
+  margin-bottom: 1.5rem;
+}
+
+/* Loading */
+.loading-spinner {
+  text-align: center;
+  padding: 3rem;
+}
+
+.text-muted.p-3 {
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  flex: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .exam-actions {
+    flex-direction: column;
+  }
+
+  .btn-download {
+    width: 100%;
+  }
+}
