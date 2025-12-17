@@ -1,5 +1,6 @@
 <?php
-// login.php - Login component only (no HTML wrapper)
+// login.php - Complete login page
+// Note: We'll handle backend logic separately later
 $error = ""; // Will be set by backend
 ?>
 
@@ -20,13 +21,12 @@ $error = ""; // Will be set by backend
                 <div class="login-body">
                     <h3 class="text-center mb-4">Connexion</h3>
                     
-                    <?php if ($error): ?>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <!-- Error/Success Alert (initially hidden) -->
+                    <div class="alert alert-danger alert-dismissible fade show d-none" role="alert" id="login-error">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        <?php echo htmlspecialchars($error); ?>
+                        <span id="error-message"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                    <?php endif; ?>
                     
                     <form method="POST" action="" id="loginForm">
                         <div class="mb-3">

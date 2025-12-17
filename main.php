@@ -16,8 +16,6 @@ else {
         $currentPage = 'examens';
     } elseif (strpos($requestUri, 'login') !== false) {
         $currentPage = 'login';
-    } elseif (strpos($requestUri, 'admin') !== false) {
-        $currentPage = 'admin';
     }
 }
 
@@ -35,8 +33,26 @@ switch ($currentPage) {
     case 'login':
         include 'frontend/login/login.php';
         break;
-    case 'admin':
-        include 'admin/index.php';
+    case 'dashboard':
+        include 'frontend/dashboard/dashboard.php';
+        break;
+    case 'manage-lessons':
+        include 'frontend/manage-lessons/manage_lessons.php';
+        break;
+    case 'manage-exams':
+        include 'frontend/manage-exams/manage_exams.php'; 
+        break;
+    case 'add-lesson':
+        include 'frontend/add-lesson/add_lesson.php';
+        break;
+    case 'edit-lesson':
+        include 'frontend/edit-lesson/edit_lesson.php';
+        break;
+    case 'add-exam':
+        include 'frontend/add-exam/add_exam.php';
+        break;
+    case 'edit-exam':
+        include 'frontend/edit-exam/edit_exam.php';
         break;
     default:
         include 'frontend/homepage/home.php';

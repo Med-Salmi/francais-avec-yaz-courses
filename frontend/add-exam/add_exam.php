@@ -1,0 +1,220 @@
+<?php
+// add_exam.php - Add Exam page (Frontend only for now)
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Ajouter un Examen</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Add Exam CSS -->
+    <style>
+    <?php include 'add_exam.css'; ?>
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar (same as other admin pages) -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <div class="sidebar-header">
+                    <h4><i class="fas fa-graduation-cap me-2"></i>Admin Français</h4>
+                    <p class="text-muted small mb-0">Bienvenue, Admin</p>
+                </div>
+                
+                <nav class="nav flex-column mt-4">
+                    <a class="nav-link" href="/?page=dashboard">
+                        <i class="fas fa-tachometer-alt me-2"></i>Tableau de bord
+                    </a>
+                    <a class="nav-link" href="/?page=manage-lessons">
+                        <i class="fas fa-book me-2"></i>Gérer les Cours
+                    </a>
+                    <a class="nav-link" href="/?page=manage-exams">
+                        <i class="fas fa-file-alt me-2"></i>Gérer les Examens
+                    </a>
+                    <!-- <a class="nav-link active" href="/?page=add-exam">
+                        <i class="fas fa-plus me-2"></i>Ajouter un Examen
+                    </a> -->
+                    
+                    <hr class="text-white-50 my-4">
+                    
+                    <a class="nav-link text-danger" href="/logout">
+                        <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3"><i class="fas fa-plus me-2"></i>Ajouter un nouvel examen</h1>
+                    <a href="/?page=manage-exams" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                    </a>
+                </div>
+                
+                <!-- Success Message (will be populated by JS) -->
+                <div class="alert alert-success alert-dismissible fade show d-none" role="alert" id="success-message">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span id="message-text"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                
+                <!-- Error Message (will be populated by JS) -->
+                <div class="alert alert-danger alert-dismissible fade show d-none" role="alert" id="error-message">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span id="error-text"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                
+                <!-- Form -->
+                <div class="form-container">
+                    <form method="POST" action="" enctype="multipart/form-data" id="addExamForm">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <!-- Basic Information -->
+                                <div class="mb-4">
+                                    <h5 class="mb-3">
+                                        <i class="fas fa-info-circle me-2"></i>Informations de l'examen
+                                    </h5>
+                                    
+                                    <div class="mb-3">
+                                        <label for="title" class="form-label required">Titre de l'examen</label>
+                                        <input type="text" class="form-control" id="title" name="title" 
+                                               required placeholder="Ex: Contrôle Continu - Semestre 1">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Description</label>
+                                        <textarea class="form-control" id="description" name="description" 
+                                                  rows="3" placeholder="Description optionnelle de l'examen..."></textarea>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="exam_year" class="form-label">Année scolaire</label>
+                                        <select class="form-control" id="exam_year" name="exam_year">
+                                            <option value="">Sélectionner une année...</option>
+                                            <?php
+                                            // Generate year options (current year and 5 years back)
+                                            $current_year = date('Y');
+                                            for ($year = $current_year; $year >= $current_year - 5; $year--) {
+                                                echo "<option value='$year'>$year</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                        <small class="text-muted">Laissez vide si non applicable</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <!-- Level Information -->
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h6 class="mb-0"><i class="fas fa-university me-2"></i>Niveau</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info mb-0">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            <strong>Niveau fixe:</strong> 1ère Année Bac
+                                            <br>
+                                            <small>Tous les examens sont pour ce niveau.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Status -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Conseils</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled mb-0">
+                                            <li class="mb-2">
+                                                <i class="fas fa-check text-success me-2"></i>
+                                                <small>Taille max: 10MB par fichier</small>
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="fas fa-check text-success me-2"></i>
+                                                <small>Format accepté: PDF uniquement</small>
+                                            </li>
+                                            <li>
+                                                <i class="fas fa-check text-success me-2"></i>
+                                                <small>Vous pouvez ajouter sujet et correction séparément</small>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- File Uploads -->
+                        <div class="row mt-4">
+                            <div class="col-md-6 mb-4">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-file-pdf me-2"></i>Sujet de l'examen (PDF)
+                                </h5>
+                                <div class="file-upload-area" id="exam-upload-area">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <h6>Cliquez pour télécharger le sujet</h6>
+                                    <p class="text-muted">ou glissez-déposez le fichier PDF</p>
+                                    <input type="file" id="exam_pdf" name="exam_pdf" 
+                                           accept=".pdf,application/pdf" class="d-none">
+                                    <div id="exam_file_name" class="file-info">
+                                        Aucun fichier sélectionné
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-check-circle me-2"></i>Correction (PDF)
+                                </h5>
+                                <div class="file-upload-area" id="correction-upload-area">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <h6>Cliquez pour télécharger la correction</h6>
+                                    <p class="text-muted">ou glissez-déposez le fichier PDF</p>
+                                    <input type="file" id="correction_pdf" name="correction_pdf" 
+                                           accept=".pdf,application/pdf" class="d-none">
+                                    <div id="correction_file_name" class="file-info">
+                                        Aucun fichier sélectionné
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Form Actions -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <button type="reset" class="btn btn-outline-secondary" id="reset-btn">
+                                        <i class="fas fa-times me-2"></i>Effacer
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                                        <i class="fas fa-save me-2"></i>Enregistrer l'examen
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Add Exam JavaScript -->
+    <script>
+    <?php include 'add_exam.js'; ?>
+    </script>
+</body>
+</html>
