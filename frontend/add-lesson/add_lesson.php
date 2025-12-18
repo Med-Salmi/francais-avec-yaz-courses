@@ -88,23 +88,7 @@
                                     <i class="fas fa-folder me-2"></i>Catégorie <span class="text-danger">*</span>
                                 </label>
                                 <select class="form-select" id="category_id" name="category_id" required>
-                                    <option value="">Sélectionnez une catégorie</option>
-                                    <optgroup label="Tronc Commun">
-                                        <option value="1">Lecture</option>
-                                        <option value="2">Langue</option>
-                                        <option value="3">Production écrite</option>
-                                        <option value="4">Production orale</option>
-                                        <option value="5">Travaux encadrés</option>
-                                        <option value="6">Résumés</option>
-                                    </optgroup>
-                                    <optgroup label="1ère Année Bac">
-                                        <option value="7">Étude de texte</option>
-                                        <option value="8">Langue</option>
-                                        <option value="9">Production écrite</option>
-                                        <option value="10">Production orale</option>
-                                        <option value="11">Travaux encadrés</option>
-                                        <option value="12">Résumés</option>
-                                    </optgroup>
+                                    <option value="">Chargement des catégories...</option>
                                 </select>
                             </div>
                         </div>

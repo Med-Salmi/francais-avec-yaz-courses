@@ -2,9 +2,98 @@
  * edit_lesson.js - Edit Lesson page JavaScript
  */
 
+// Function to load categories from API
+function loadCategories() {
+  const categorySelect = document.getElementById("category_id");
+
+  if (!categorySelect) {
+    console.error("Category select element not found");
+    return;
+  }
+
+  fetch("/backend/api/categories/get.php")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.success) {
+        populateCategoryDropdown(categorySelect, data.data);
+      } else {
+        console.error("Failed to load categories:", data.message);
+        categorySelect.innerHTML =
+          '<option value="">Erreur de chargement</option>';
+      }
+    })
+    .catch((error) => {
+      console.error("Error loading categories:", error);
+      categorySelect.innerHTML =
+        '<option value="">Erreur de connexion</option>';
+    });
+}
+
+// Function to populate category dropdown
+function populateCategoryDropdown(selectElement, categoriesData) {
+  // Clear existing options
+  selectElement.innerHTML =
+    '<option value="">Sélectionnez une catégorie</option>';
+
+  // categoriesData is an array of level groups
+  categoriesData.forEach((levelGroup) => {
+    // Create optgroup
+    const optgroup = document.createElement("optgroup");
+
+    // Set label (French display name)
+    if (levelGroup.level_slug === "tronc-commun") {
+      optgroup.label = "Tronc Commun";
+    } else if (levelGroup.level_slug === "1ere-annee-bac") {
+      optgroup.label = "1ère Année Bac";
+    } else {
+      optgroup.label = levelGroup.level_name;
+    }
+
+    // Add categories for this level
+    levelGroup.categories.forEach((category) => {
+      const option = document.createElement("option");
+      option.value = category.id; // Use database ID
+      option.textContent = category.name; // Use database name
+      optgroup.appendChild(option);
+    });
+
+    selectElement.appendChild(optgroup);
+  });
+}
+
+// Function to set category after categories are loaded
+function setSelectedCategory(categoryId) {
+  const categorySelect = document.getElementById("category_id");
+  if (categorySelect && categoryId) {
+    // Try immediately
+    categorySelect.value = categoryId;
+
+    // If not found yet (categories still loading), try again
+    if (categorySelect.value !== categoryId) {
+      const checkInterval = setInterval(() => {
+        categorySelect.value = categoryId;
+        if (categorySelect.value === categoryId) {
+          clearInterval(checkInterval);
+        }
+      }, 100);
+
+      // Stop checking after 3 seconds
+      setTimeout(() => clearInterval(checkInterval), 3000);
+    }
+  }
+}
+
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Edit Lesson page loaded");
+
+  // Load categories from API
+  loadCategories();
 
   // Get elements
   const editLessonForm = document.getElementById("editLessonForm");
@@ -17,6 +106,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const lessonId = document.getElementById("lesson_id")
     ? document.getElementById("lesson_id").value
     : 0;
+
+  // Load lesson data from API
+  if (lessonId > 0) {
+    loadLessonData(lessonId);
+  }
 
   // Form submission handler
   if (editLessonForm) {
@@ -102,6 +196,110 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // Function to load lesson data
+  function loadLessonData(lessonId) {
+    // Show loading state
+    const loadingState = document.getElementById("loading-state");
+    const formContainer = document.getElementById("exam-form-container");
+
+    if (loadingState) loadingState.classList.remove("d-none");
+    if (formContainer) formContainer.classList.add("d-none");
+
+    // Fetch real lesson data from API
+    fetch(`/backend/api/lessons/get-one.php?id=${lessonId}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.success) {
+          // Populate form with REAL lesson data
+          populateFormWithLessonData(data.data);
+
+          // Show form
+          if (loadingState) loadingState.classList.add("d-none");
+          if (formContainer) formContainer.classList.remove("d-none");
+        } else {
+          throw new Error(data.message || "Failed to load lesson");
+        }
+      })
+      .catch((error) => {
+        console.error("Error loading lesson:", error);
+
+        // Show error message
+        const errorElement = document.getElementById("error-message");
+        const errorText = document.getElementById("error-text");
+        if (errorElement && errorText) {
+          errorText.textContent =
+            "Erreur de chargement de la leçon: " + error.message;
+          errorElement.classList.remove("d-none");
+        }
+
+        // Hide loading, show not found
+        if (loadingState) loadingState.classList.add("d-none");
+        document.getElementById("exam-not-found").classList.remove("d-none");
+      });
+  }
+
+  // Function to populate form with lesson data
+  function populateFormWithLessonData(lesson) {
+    document.getElementById("title").value = lesson.title || "";
+    document.getElementById("content").value = lesson.content || "";
+    document.getElementById("video_url").value = lesson.video_url || "";
+
+    // Set the category selection
+    setSelectedCategory(lesson.category_id);
+
+    // Update lesson info display
+    updateLessonDisplayInfo(lesson);
+  }
+
+  // Function to update lesson info display
+  function updateLessonDisplayInfo(lesson) {
+    const lessonInfo = document.getElementById("lesson-info");
+    if (lessonInfo) {
+      const createdDate = new Date(lesson.created_at);
+      const formattedCreatedDate = createdDate.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      let html = `
+        <li class="mb-2">
+          <strong>ID:</strong> ${lesson.id}
+        </li>
+        <li class="mb-2">
+          <strong>Date d'ajout:</strong><br>
+          ${formattedCreatedDate}
+        </li>
+      `;
+
+      if (lesson.updated_at && lesson.updated_at !== lesson.created_at) {
+        const updatedDate = new Date(lesson.updated_at);
+        const formattedUpdatedDate = updatedDate.toLocaleDateString("fr-FR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        html += `
+          <li>
+            <strong>Dernière modification:</strong><br>
+            ${formattedUpdatedDate}
+          </li>
+        `;
+      }
+
+      lessonInfo.innerHTML = html;
+    }
+  }
+
   // Function to validate form
   function validateForm() {
     let isValid = true;
@@ -178,22 +376,23 @@ document.addEventListener("DOMContentLoaded", function () {
   function updateLessonInfo(formData) {
     const lessonInfo = document.getElementById("lesson-info");
     if (lessonInfo) {
-      // Update category name in info
-      const items = lessonInfo.querySelectorAll("li");
-      if (items.length >= 4) {
-        // Update category (4th item)
-        items[3].innerHTML = `Catégorie actuelle: ${formData.category_name}`;
+      // Update last modified date
+      const now = new Date(formData.updated_at);
+      const formattedDate = now.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 
-        // Update last modified date
-        const now = new Date(formData.updated_at);
-        const formattedDate = now.toLocaleDateString("fr-FR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-        items[2].innerHTML = `Dernière modification: ${formattedDate}`;
+      // Find and update the last modified date item
+      const items = lessonInfo.querySelectorAll("li");
+      if (items.length >= 3) {
+        // Update last modified date (should be last item)
+        items[
+          items.length - 1
+        ].innerHTML = `<strong>Dernière modification:</strong><br>${formattedDate}`;
       }
     }
   }

@@ -1,0 +1,247 @@
+/* Lesson Item Modal Styles */
+#lessonModal .modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+#lessonModal .modal-header {
+  background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+  color: white;
+  border-radius: 12px 12px 0 0;
+  padding: 1.2rem 1.5rem;
+}
+
+#lessonModal .modal-header .btn-close {
+  filter: invert(1) brightness(100%);
+  opacity: 0.8;
+}
+
+#lessonModal .modal-header .btn-close:hover {
+  opacity: 1;
+}
+
+#lessonModal .modal-body {
+  padding: 1.5rem;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+#lessonModal .modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1.2rem 1.5rem;
+}
+
+/* Section Titles */
+.section-title {
+  color: #4361ee;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e9ecef;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+}
+
+.section-title i {
+  font-size: 1.2rem;
+}
+
+/* Cards */
+.lesson-content-section .card,
+.lesson-video-section .card {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.lesson-content-section .card-body,
+.lesson-video-section .card-body {
+  padding: 1.5rem;
+}
+
+/* Lesson Content */
+.lesson-content {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #444;
+}
+
+.lesson-content p {
+  margin-bottom: 1rem;
+}
+
+.lesson-content h4,
+.lesson-content h5 {
+  color: #2c3e50;
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.lesson-content ul,
+.lesson-content ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.lesson-content li {
+  margin-bottom: 0.5rem;
+}
+
+.lesson-content strong {
+  color: #4361ee;
+  font-weight: 600;
+}
+
+/* Video Container */
+.lesson-video-container .ratio {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+}
+
+.lesson-video-container iframe {
+  border-radius: 8px;
+}
+
+/* ========== EXACT QUIZ STYLES FROM cours.html ========== */
+
+.quiz-section {
+  background: #f8f9ff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  border-left: 4px solid #7209b7;
+}
+
+.quiz-question {
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #2b2d42;
+}
+
+.quiz-option {
+  background: white;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quiz-option:hover {
+  background: #f0f4ff;
+  border-color: #4361ee;
+}
+
+.quiz-option.selected {
+  background: #e7f4ff;
+  border-color: #4361ee;
+  box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+}
+
+.quiz-option.correct {
+  background: #d4edda;
+  border-color: #28a745;
+}
+
+.quiz-option.incorrect {
+  background: #f8d7da;
+  border-color: #dc3545;
+}
+
+.explanation {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  display: none;
+}
+
+/* Button Styling */
+#lessonModal .btn-secondary {
+  background: #6c757d;
+  border-color: #6c757d;
+  padding: 0.6rem 1.5rem;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+#lessonModal .btn-secondary:hover {
+  background: #5a6268;
+  border-color: #545b62;
+  transform: translateY(-1px);
+}
+
+#submitQuiz {
+  padding: 0.6rem 1.5rem;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+/* Quiz Results Alert */
+#quizResult .alert {
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+#quizResult .alert-success {
+  background: #d4edda;
+  border-left: 4px solid #28a745;
+}
+
+#quizResult .alert-warning {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+}
+
+#quizResult .alert-danger {
+  background: #f8d7da;
+  border-left: 4px solid #dc3545;
+}
+
+/* Loading spinner */
+#lessonContentContainer .spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #lessonModal .modal-body {
+    padding: 1rem;
+    max-height: 85vh;
+  }
+
+  #lessonModal .modal-dialog {
+    margin: 0.5rem;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+  }
+
+  .quiz-section {
+    padding: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .quiz-question {
+    font-size: 1rem;
+  }
+
+  .quiz-option {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  #lessonModal .btn-secondary,
+  #submitQuiz {
+    padding: 0.5rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}

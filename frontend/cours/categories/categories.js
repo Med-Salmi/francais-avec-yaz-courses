@@ -12,8 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
   loadCategoriesForLevel("tronc-commun");
 });
 
-// Function to load categories based on level
-function loadCategoriesForLevel(level) {
+// SIMPLIFIED VERSION - Use only mock data for now
+async function loadCategoriesForLevel(level) {
   const container = document.getElementById("categories-container");
 
   // Show loading state
@@ -26,14 +26,50 @@ function loadCategoriesForLevel(level) {
         </div>
     `;
 
-  // Simulate API delay
+  // Use mock data immediately (remove API call)
   setTimeout(() => {
-    const categories = getCategoriesByLevel(level);
-    displayCategories(categories);
-  }, 500);
+    const mockCategories = getCategoriesByLevel(level);
+    displayCategories(mockCategories, level);
+  }, 300);
 }
 
-// Function to get categories based on level
+// Helper function to extract categories from API response
+function extractCategoriesFromApi(apiData, levelSlug) {
+  console.log("Extracting from API data:", apiData); // Debug log
+  console.log("Looking for level:", levelSlug); // Debug log
+
+  // Case 1: API returns an array of categories directly
+  if (Array.isArray(apiData) && apiData.length > 0 && apiData[0].id) {
+    // Filter by level if level information is in categories
+    return apiData.filter((cat) => {
+      const catLevel =
+        cat.level_slug ||
+        (cat.level_name
+          ? cat.level_name.toLowerCase().replace(/\s+/g, "-")
+          : "");
+      return catLevel.includes(levelSlug);
+    });
+  }
+
+  // Case 2: API returns grouped data by level (my earlier assumption)
+  if (Array.isArray(apiData) && apiData.length > 0 && apiData[0].categories) {
+    const levelGroup = apiData.find((group) => {
+      const groupLevel =
+        group.level_slug ||
+        (group.level_name
+          ? group.level_name.toLowerCase().replace(/\s+/g, "-")
+          : "");
+      return groupLevel && groupLevel.includes(levelSlug);
+    });
+    return levelGroup ? levelGroup.categories : [];
+  }
+
+  // Case 3: Unknown structure, return empty
+  console.warn("Unknown API structure:", apiData);
+  return [];
+}
+
+// Function to get mock categories based on level (fallback)
 function getCategoriesByLevel(level) {
   const categories = {
     "tronc-commun": [
@@ -118,15 +154,17 @@ function getCategoriesByLevel(level) {
 }
 
 // Function to display categories
-function displayCategories(categories) {
+function displayCategories(categories, level) {
+  console.log("Displaying categories:", categories); // Debug log
   const container = document.getElementById("categories-container");
 
-  if (categories.length === 0) {
+  if (!categories || categories.length === 0) {
     container.innerHTML = `
             <div class="col-12 text-center py-5">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Aucune catégorie disponible pour ce niveau.
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Aucune catégorie disponible pour "${level}".<br>
+                    <small>Vérifiez votre connexion ou contactez l'administrateur.</small>
                 </div>
             </div>
         `;
@@ -149,7 +187,9 @@ function displayCategories(categories) {
                     </div>
                     <h4 class="category-title">${category.name}</h4>
                     <p class="text-muted mb-3">${category.description}</p>
-                    <button class="btn btn-primary mt-3" onclick="openCategoryModal(${category.id}, '${category.name}')">
+                    <button class="btn btn-primary mt-3 view-lessons-btn" 
+                            data-category-id="${category.id}" 
+                            data-category-name="${category.name}">
                         <i class="fas fa-book-open me-2"></i>Voir les leçons
                     </button>
                 </div>
@@ -157,6 +197,15 @@ function displayCategories(categories) {
         `;
 
     container.appendChild(col);
+  });
+
+  // Add event listeners to all "Voir les leçons" buttons
+  container.querySelectorAll(".view-lessons-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+      const categoryId = this.getAttribute("data-category-id");
+      const categoryName = this.getAttribute("data-category-name");
+      openLessonsModal(categoryId, categoryName);
+    });
   });
 }
 
@@ -188,10 +237,14 @@ function getCategoryIcon(slug) {
   return icons[slug] || "fas fa-folder";
 }
 
-// Function to open category modal (placeholder for now)
-function openCategoryModal(categoryId, categoryName) {
-  alert(
-    `Ouvrir les leçons pour: ${categoryName} (ID: ${categoryId})\n\nCette fonctionnalité sera implémentée avec le composant modals.`
-  );
-  console.log(`Category clicked: ${categoryName}, ID: ${categoryId}`);
+// Function to open lessons modal
+function openLessonsModal(categoryId, categoryName) {
+  // Dispatch custom event that the lessons-list modal will listen for
+  const event = new CustomEvent("openLessonsModal", {
+    detail: {
+      categoryId: categoryId,
+      categoryName: categoryName,
+    },
+  });
+  document.dispatchEvent(event);
 }
