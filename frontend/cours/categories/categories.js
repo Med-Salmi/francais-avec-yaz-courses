@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
   loadCategoriesForLevel("tronc-commun");
 });
 
-// SIMPLIFIED VERSION - Use only mock data for now
 async function loadCategoriesForLevel(level) {
   const container = document.getElementById("categories-container");
 
@@ -26,11 +25,45 @@ async function loadCategoriesForLevel(level) {
         </div>
     `;
 
-  // Use mock data immediately (remove API call)
-  setTimeout(() => {
-    const mockCategories = getCategoriesByLevel(level);
-    displayCategories(mockCategories, level);
-  }, 300);
+  try {
+    // Call the REAL API
+    const response = await fetch(
+      `/backend/api/categories/get.php?level=${level}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.success && data.data && data.data.categories) {
+      // Use REAL categories from API
+      displayCategories(data.data.categories, level);
+    } else {
+      // Show error message to user
+      container.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Aucune catégorie disponible pour "${level}".
+                </div>
+            </div>
+        `;
+    }
+  } catch (error) {
+    // Show error message to user
+    container.innerHTML = `
+        <div class="col-12 text-center py-5">
+            <div class="alert alert-danger">
+                <i class="fas fa-times-circle me-2"></i>
+                Erreur de chargement des catégories.
+                <br><small>Veuillez réessayer ou contacter l'administrateur.</small>
+            </div>
+        </div>
+    `;
+    console.error("Error loading categories:", error);
+  }
 }
 
 // Helper function to extract categories from API response
