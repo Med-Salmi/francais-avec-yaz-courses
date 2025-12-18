@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let currentQuizAnswers = {};
   let quizSubmitted = false;
   let currentLessonId = null;
+  let currentQuizQuestions = [];
 
   // Listen for custom event to open lesson modal
   document.addEventListener("openLessonModal", function (event) {
@@ -63,6 +64,9 @@ document.addEventListener("DOMContentLoaded", function () {
       if (data.success && data.data && data.data.lesson) {
         // Use REAL lesson data from API
         renderLessonContent(data.data.lesson);
+
+        // Load quiz questions for this lesson
+        loadQuizQuestions(lessonId);
       } else {
         // If API fails, show error
         showLessonError("Impossible de charger cette leçon.");
@@ -71,6 +75,104 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Error loading lesson:", error);
       showLessonError("Erreur de connexion au serveur.");
     }
+  }
+
+  // Function to load quiz questions from API
+  async function loadQuizQuestions(lessonId) {
+    try {
+      const response = await fetch(
+        `/backend/api/quiz/get.php?lesson_id=${lessonId}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success && data.data && data.data.questions) {
+        currentQuizQuestions = data.data.questions;
+        renderQuizQuestions(currentQuizQuestions);
+      } else {
+        // If no quiz questions, hide quiz section
+        document.getElementById("quizSection").style.display = "none";
+      }
+    } catch (error) {
+      console.error("Error loading quiz:", error);
+      // Hide quiz section on error
+      document.getElementById("quizSection").style.display = "none";
+    }
+  }
+
+  // Function to render quiz questions
+  function renderQuizQuestions(questions) {
+    const quizQuestionsContainer = document.getElementById("quizQuestions");
+    const submitBtn = document.getElementById("submitQuiz");
+    const quizResult = document.getElementById("quizResult");
+
+    if (!questions || questions.length === 0) {
+      document.getElementById("quizSection").style.display = "none";
+      return;
+    }
+
+    // Show quiz section
+    document.getElementById("quizSection").style.display = "block";
+
+    let html = "";
+    questions.forEach((question, index) => {
+      html += `
+        <div class="quiz-question mb-3">
+          Q${index + 1}: ${question.question}
+        </div>
+        <div class="mb-4">
+          <div class="quiz-option" data-question="${
+            question.id
+          }" data-option="a">
+            A. ${question.option_a}
+          </div>
+          <div class="quiz-option" data-question="${
+            question.id
+          }" data-option="b">
+            B. ${question.option_b}
+          </div>
+          <div class="quiz-option" data-question="${
+            question.id
+          }" data-option="c">
+            C. ${question.option_c}
+          </div>
+          <div class="quiz-option" data-question="${
+            question.id
+          }" data-option="d">
+            D. ${question.option_d}
+          </div>
+          <div class="explanation" id="explanation-${
+            question.id
+          }" style="display: none;">
+            <strong>Explication:</strong> ${
+              question.explanation || "Aucune explication disponible."
+            }
+          </div>
+        </div>
+      `;
+    });
+
+    quizQuestionsContainer.innerHTML = html;
+
+    // Show submit button
+    if (submitBtn) {
+      submitBtn.style.display = "block";
+      submitBtn.disabled = false;
+      submitBtn.innerHTML =
+        '<i class="fas fa-paper-plane me-2"></i>Soumettre le Quiz';
+    }
+
+    // Hide previous results
+    if (quizResult) {
+      quizResult.style.display = "none";
+    }
+
+    // Set up event listeners for new quiz options
+    setupQuizEventListeners();
   }
 
   // Function to show error message
@@ -115,73 +217,10 @@ document.addEventListener("DOMContentLoaded", function () {
     lessonContentContainer.innerHTML = "";
     lessonContentContainer.appendChild(contentClone);
 
-    // Initialize quiz for this lesson
-    initializeQuizForLesson(lessonData.id);
-
     console.log("Lesson content rendered:", lessonData.title);
   }
 
   // ==================== QUIZ FUNCTIONALITY ====================
-
-  // Initialize quiz for a specific lesson
-  function initializeQuizForLesson(lessonId) {
-    console.log("Initializing quiz for lesson:", lessonId);
-
-    // Reset quiz state
-    resetQuiz();
-
-    // Show quiz section (it's always visible in our updated HTML)
-    const quizSection = document.getElementById("quizSection");
-    if (quizSection) {
-      console.log("Quiz section found, setting up event listeners");
-
-      // Set up click event listeners for quiz options
-      setupQuizEventListeners();
-
-      // Set up submit button
-      const submitBtn = document.getElementById("submitQuiz");
-      if (submitBtn) {
-        submitBtn.addEventListener("click", submitQuiz);
-        submitBtn.disabled = false;
-        submitBtn.innerHTML =
-          '<i class="fas fa-paper-plane me-2"></i>Soumettre le Quiz';
-        submitBtn.style.display = "block";
-      }
-    } else {
-      console.error("Quiz section not found in DOM");
-    }
-  }
-
-  // Reset quiz state
-  function resetQuiz() {
-    currentQuizAnswers = {};
-    quizSubmitted = false;
-
-    // Reset all quiz options
-    document.querySelectorAll(".quiz-option").forEach((option) => {
-      option.classList.remove("selected", "correct", "incorrect");
-    });
-
-    // Hide all explanations
-    document.querySelectorAll(".explanation").forEach((expl) => {
-      expl.style.display = "none";
-    });
-
-    // Reset submit button
-    const submitBtn = document.getElementById("submitQuiz");
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML =
-        '<i class="fas fa-paper-plane me-2"></i>Soumettre le Quiz';
-      submitBtn.style.display = "block";
-    }
-
-    // Hide quiz results
-    const quizResult = document.getElementById("quizResult");
-    if (quizResult) {
-      quizResult.style.display = "none";
-    }
-  }
 
   // Set up event listeners for quiz options
   function setupQuizEventListeners() {
@@ -201,6 +240,13 @@ document.addEventListener("DOMContentLoaded", function () {
         selectAnswer(questionId, optionValue);
       });
     });
+
+    // Set up submit button
+    const submitBtn = document.getElementById("submitQuiz");
+    if (submitBtn) {
+      submitBtn.onclick = submitQuiz;
+      submitBtn.disabled = false;
+    }
   }
 
   // Function to select answer
@@ -227,29 +273,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to submit quiz
   function submitQuiz() {
-    if (quizSubmitted) return;
-
-    // Correct answers for mock questions (from our HTML)
-    const correctAnswers = {
-      1: "c", // Paris
-      2: "b", // Manger
-      3: "a", // vais
-    };
+    if (quizSubmitted || currentQuizQuestions.length === 0) return;
 
     let score = 0;
-    const totalQuestions = Object.keys(correctAnswers).length;
+    const totalQuestions = currentQuizQuestions.length;
 
     // Check answers
-    for (let questionId in correctAnswers) {
-      const userAnswer = currentQuizAnswers[questionId];
-      const correctAnswer = correctAnswers[questionId];
+    currentQuizQuestions.forEach((question) => {
+      const userAnswer = currentQuizAnswers[question.id];
+      const correctAnswer = question.correct_answer;
       const explanationDiv = document.getElementById(
-        `explanation-${questionId}`
+        `explanation-${question.id}`
       );
 
       // Highlight correct/incorrect answers
       const options = document.querySelectorAll(
-        `[data-question="${questionId}"]`
+        `[data-question="${question.id}"]`
       );
       options.forEach((opt) => {
         opt.classList.remove("correct", "incorrect");
@@ -272,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (userAnswer === correctAnswer) {
         score++;
       }
-    }
+    });
 
     // Display result
     const percentage = Math.round((score / totalQuestions) * 100);
@@ -309,6 +348,38 @@ document.addEventListener("DOMContentLoaded", function () {
     quizSubmitted = true;
   }
 
+  // Reset quiz state
+  function resetQuiz() {
+    currentQuizAnswers = {};
+    quizSubmitted = false;
+    currentQuizQuestions = [];
+
+    // Reset all quiz options
+    document.querySelectorAll(".quiz-option").forEach((option) => {
+      option.classList.remove("selected", "correct", "incorrect");
+    });
+
+    // Hide all explanations
+    document.querySelectorAll(".explanation").forEach((expl) => {
+      expl.style.display = "none";
+    });
+
+    // Reset submit button
+    const submitBtn = document.getElementById("submitQuiz");
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML =
+        '<i class="fas fa-paper-plane me-2"></i>Soumettre le Quiz';
+      submitBtn.style.display = "block";
+    }
+
+    // Hide quiz results
+    const quizResult = document.getElementById("quizResult");
+    if (quizResult) {
+      quizResult.style.display = "none";
+    }
+  }
+
   // ==================== END QUIZ FUNCTIONALITY ====================
 
   // Cleanup on modal hide
@@ -331,5 +402,5 @@ document.addEventListener("DOMContentLoaded", function () {
       currentLessonId = null;
     });
 
-  console.log("Lesson item JS loaded - Real data enabled");
+  console.log("Lesson item JS loaded - Real data & quiz enabled");
 });
