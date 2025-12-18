@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Function to load lessons for a category
-  function loadLessonsForCategory(categoryId, categoryName) {
+  async function loadLessonsForCategory(categoryId, categoryName) {
     const container = document.getElementById("lessonsListContainer");
     if (!container) {
       console.error("ERROR: lessonsListContainer not found");
@@ -55,15 +55,53 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
         `;
 
-    // Simulate API delay
-    setTimeout(() => {
-      // Get hardcoded lessons based on category
+    try {
+      // Get current level from global variable
+      const currentLevel = window.getCurrentLevel
+        ? window.getCurrentLevel()
+        : "tronc-commun";
+
+      console.log(
+        "Fetching lessons for category:",
+        categoryId,
+        "level:",
+        currentLevel
+      );
+
+      // Call REAL API
+      const response = await fetch(
+        `/backend/api/lessons/get.php?category_id=${categoryId}&level=${currentLevel}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success && data.data && data.data.lessons) {
+        // Use REAL lessons from API
+        renderLessons(data.data.lessons);
+      } else {
+        // Show error message
+        container.innerHTML = `
+          <div class="col-12 text-center py-5">
+              <div class="alert alert-warning">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  Aucune leçon disponible pour "${categoryName}".
+              </div>
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error("Error loading lessons:", error);
+      // Fallback to mock data if API fails
       const lessons = getMockLessonsByCategory(categoryId, categoryName);
       renderLessons(lessons);
-    }, 500);
+    }
   }
 
-  // Function to get mock lessons (hardcoded for all categories)
+  // Function to get mock lessons (fallback only)
   function getMockLessonsByCategory(categoryId, categoryName) {
     console.log("DEBUG: Getting mock lessons for category ID:", categoryId);
 

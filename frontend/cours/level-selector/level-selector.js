@@ -1,6 +1,16 @@
 // level-selector Component JavaScript
+
+// Global variable to track current level
+let currentLevel = "tronc-commun"; // Default value
+
 document.addEventListener("DOMContentLoaded", function () {
   const levelButtons = document.querySelectorAll(".level-btn");
+
+  // Set initial active state
+  const initialActiveButton = document.querySelector(".level-btn.active");
+  if (initialActiveButton) {
+    currentLevel = initialActiveButton.getAttribute("data-level");
+  }
 
   levelButtons.forEach((button) => {
     button.addEventListener("click", function () {
@@ -10,17 +20,21 @@ document.addEventListener("DOMContentLoaded", function () {
       // Add active class to clicked button
       this.classList.add("active");
 
-      // Get the selected level
-      const selectedLevel = this.getAttribute("data-level");
+      // Update the global currentLevel
+      currentLevel = this.getAttribute("data-level");
 
-      // You can dispatch an event or call a function to update other components
-      console.log("Selected level:", selectedLevel);
+      console.log("Selected level:", currentLevel);
 
-      // Example: Dispatch a custom event that other components can listen to
+      // Dispatch event with the new level
       const event = new CustomEvent("levelChanged", {
-        detail: { level: selectedLevel },
+        detail: { level: currentLevel },
       });
       document.dispatchEvent(event);
     });
   });
 });
+
+// Make currentLevel accessible globally
+window.getCurrentLevel = function () {
+  return currentLevel;
+};
