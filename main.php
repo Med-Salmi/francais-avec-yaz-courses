@@ -54,6 +54,9 @@ switch ($currentPage) {
     case 'edit-exam':
         include 'frontend/edit-exam/edit_exam.php';
         break;
+    case 'manage-quiz':
+        include 'frontend/manage-quiz/manage_quiz.php';
+        break;
     default:
         include 'frontend/homepage/home.php';
         break;

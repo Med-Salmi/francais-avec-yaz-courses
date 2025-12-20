@@ -7,7 +7,6 @@ require_once '../../includes/config.php';
 
 // Get parameters
 $level_slug = isset($_GET['level']) ? $_GET['level'] : '1ere-annee-bac';
-$subject = isset($_GET['subject']) ? $_GET['subject'] : null;
 $year = isset($_GET['year']) ? intval($_GET['year']) : null;
 
 // Force 1ere-annee-bac since that's all you have
@@ -20,12 +19,6 @@ try {
     $query = "SELECT * FROM exams WHERE level_slug = ?";
     $params = [$level_slug];
     $types = "s";
-    
-    if ($subject) {
-        $query .= " AND subject = ?";
-        $params[] = $subject;
-        $types .= "s";
-    }
     
     if ($year) {
         $query .= " AND exam_year = ?";
@@ -58,7 +51,7 @@ try {
         $exams[] = $row;
     }
     
-    // Get unique years and subjects for filters
+    // Get unique years for filters
     $filterStmt = $conn->prepare("
         SELECT DISTINCT exam_year FROM exams WHERE level_slug = ? ORDER BY exam_year DESC
     ");
@@ -71,26 +64,13 @@ try {
         $years[] = $row['exam_year'];
     }
     
-    $subjectStmt = $conn->prepare("
-        SELECT DISTINCT subject FROM exams WHERE level_slug = ? AND subject IS NOT NULL ORDER BY subject
-    ");
-    $subjectStmt->bind_param("s", $level_slug);
-    $subjectStmt->execute();
-    $subjectResult = $subjectStmt->get_result();
-    
-    $subjects = [];
-    while ($row = $subjectResult->fetch_assoc()) {
-        $subjects[] = $row['subject'];
-    }
-    
     $stmt->close();
     $conn->close();
     
     jsonResponse(true, 'Exams loaded successfully', [
         'exams' => $exams,
         'filters' => [
-            'years' => $years,
-            'subjects' => $subjects
+            'years' => $years
         ],
         'count' => count($exams)
     ]);

@@ -1,6 +1,11 @@
 <?php
-// manage_exams.php - Manage Exams page
-// We'll handle backend authentication separately later
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header("Location: /?page=login");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">

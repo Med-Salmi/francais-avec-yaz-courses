@@ -119,14 +119,6 @@ function displayExams(exams) {
         ? exam.description
         : "Examen de français pour la 1ère Année Bac.";
 
-    // Format subject (if available)
-    const subjectBadge = exam.subject
-      ? `<span class="exam-badge subject">
-            <i class="fas fa-book me-1"></i>
-            ${exam.subject}
-         </span>`
-      : "";
-
     // Determine what buttons to show
     const examButton = exam.exam_pdf_path
       ? `<a href="${exam.exam_pdf_path}" class="btn-download btn-download-exam" target="_blank">
@@ -160,7 +152,6 @@ function displayExams(exams) {
                             <i class="fas fa-calendar me-1"></i>
                             ${exam.exam_year || "N/A"}
                         </span>
-                        ${subjectBadge}
                     </div>
                 </div>
                 <div class="exam-body">

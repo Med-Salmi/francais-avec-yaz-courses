@@ -156,9 +156,9 @@ if ($lesson_id <= 0) {
                                 <i class="fas fa-eye me-2"></i>Voir la leçon
                             </button>
                             <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-warning" id="manage-quiz-btn">
+                                <a href="/?page=manage-quiz&lesson_id=<?php echo $lesson_id; ?>" class="btn btn-warning">
                                     <i class="fas fa-question-circle me-2"></i>Gérer le Quiz
-                                </button>
+                                </a>
                                 <button type="submit" class="btn btn-primary" id="submit-btn">
                                     <i class="fas fa-save me-2"></i>Enregistrer les modifications
                                 </button>

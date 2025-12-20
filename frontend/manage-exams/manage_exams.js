@@ -1,89 +1,112 @@
 /**
  * manage_exams.js - Manage Exams page JavaScript
+ * UPDATED: Now uses real API data
  */
+
+// API URLs
+const EXAMS_API = "/backend/api/exams/list.php";
+const DELETE_EXAM_API = "/backend/api/exams/delete.php";
 
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Manage Exams page loaded");
 
-  // Load exams data
-  loadExams();
-
-  // Check for success message in URL
-  checkForSuccessMessage();
+  // First check authentication, then load data
+  checkAuthAndLoadExams();
 
   // Setup event listeners
   setupEventListeners();
 });
 
-// Function to load exams
-function loadExams() {
+// Function to check authentication and load exams
+async function checkAuthAndLoadExams() {
+  try {
+    // First check if user is authenticated
+    const authResponse = await fetch("/backend/api/auth/check.php", {
+      credentials: "include",
+    });
+
+    if (authResponse.ok) {
+      // User is authenticated, load exams
+      loadExams();
+
+      // Check for success message in URL
+      checkForSuccessMessage();
+    } else {
+      // Not authenticated, redirect to login
+      window.location.href = "/?page=login";
+    }
+  } catch (error) {
+    console.error("Auth check failed:", error);
+    window.location.href = "/?page=login";
+  }
+}
+
+// Function to load exams from API
+async function loadExams() {
   const tbody = document.getElementById("exams-tbody");
 
-  // For now, simulate loading with sample data
-  // Backend will provide real data later
+  // Show loading state
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="6" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p class="mt-2">Chargement des examens...</p>
+      </td>
+    </tr>
+  `;
 
-  setTimeout(() => {
-    // Sample data (will be replaced with API call)
-    const exams = [
-      {
-        id: 1,
-        title: "Examen de Français - Session Normale",
-        description: "Examen complet de français pour la 1ère Année Bac",
-        exam_year: 2025,
-        exam_pdf_path: "/uploads/exams/exam1.pdf",
-        correction_pdf_path: "/uploads/exams/correction1.pdf",
-        created_at: "2025-01-15",
-      },
-      {
-        id: 2,
-        title: "Examen de Français - Session de Rattrapage",
-        description: "Examen de rattrapage avec questions sur la littérature",
-        exam_year: 2024,
-        exam_pdf_path: "/uploads/exams/exam2.pdf",
-        correction_pdf_path: null,
-        created_at: "2024-06-20",
-      },
-      {
-        id: 3,
-        title: "Contrôle Continu - Semestre 1",
-        description: "Contrôle continu portant sur les figures de style",
-        exam_year: 2025,
-        exam_pdf_path: null,
-        correction_pdf_path: "/uploads/exams/correction3.pdf",
-        created_at: "2025-11-10",
-      },
-      {
-        id: 4,
-        title: "Examen Blanc - Préparation Bac",
-        description: "Examen blanc complet pour la préparation au baccalauréat",
-        exam_year: 2023,
-        exam_pdf_path: null,
-        correction_pdf_path: null,
-        created_at: "2023-12-05",
-      },
-    ];
+  try {
+    const response = await fetch(EXAMS_API, {
+      credentials: "include",
+    });
 
-    displayExams(exams);
-  }, 800);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.success) {
+      // Display real exams from API
+      displayExams(data.data.exams);
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error("Error loading exams:", error);
+    showError("Erreur de chargement des examens. Veuillez réessayer.");
+
+    // Show error state
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center text-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Erreur de chargement: ${error.message}
+        </td>
+      </tr>
+    `;
+  }
 }
 
 // Function to display exams in table
 function displayExams(exams) {
   const tbody = document.getElementById("exams-tbody");
 
-  if (exams.length === 0) {
+  if (!exams || exams.length === 0) {
     tbody.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center">
-                    <div class="text-muted py-4">
-                        <i class="fas fa-file-alt fa-3x mb-3" style="opacity: 0.3;"></i>
-                        <h5>Aucun examen trouvé</h5>
-                        <p>Commencez par ajouter votre premier examen.</p>
-                    </div>
-                </td>
-            </tr>
-        `;
+      <tr>
+        <td colspan="6" class="text-center">
+          <div class="text-muted py-4">
+            <i class="fas fa-file-alt fa-3x mb-3" style="opacity: 0.3;"></i>
+            <h5>Aucun examen trouvé</h5>
+            <p>Commencez par ajouter votre premier examen.</p>
+          </div>
+        </td>
+      </tr>
+    `;
     return;
   }
 
@@ -113,69 +136,107 @@ function displayExams(exams) {
     }
 
     html += `
-            <tr>
-                <td>${exam.id}</td>
-                <td>
-                    <strong>${escapeHtml(exam.title)}</strong>
-                    ${
-                      exam.description
-                        ? `<br><small class="text-muted">${escapeHtml(
-                            exam.description.substring(0, 100)
-                          )}...</small>`
-                        : ""
-                    }
-                </td>
-                <td>${exam.exam_year || "N/A"}</td>
-                <td>
-                    <span class="exam-status ${statusClass}">${status}</span>
-                </td>
-                <td>${formattedDate}</td>
-                <td class="table-actions">
-                    <a href="/?page=edit-exam&id=${
-                      exam.id
-                    }" class="btn btn-sm btn-warning btn-action" title="Modifier">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <button class="btn btn-sm btn-danger btn-action" title="Supprimer" onclick="confirmDelete(${
-                      exam.id
-                    })">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                    <!-- UPDATED VIEW BUTTON: Direct link to examens page with exam ID -->
-                    <a href="/?page=examens&exam=${
-                      exam.id
-                    }" target="_blank" class="btn btn-sm btn-info btn-action" title="Voir l'examen">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                </td>
-            </tr>
-        `;
+      <tr id="exam-row-${exam.id}">
+        <td>${exam.id}</td>
+        <td>
+          <strong>${escapeHtml(exam.title)}</strong>
+          ${
+            exam.description
+              ? `<br><small class="text-muted">${escapeHtml(
+                  exam.description.substring(0, 100)
+                )}...</small>`
+              : ""
+          }
+        </td>
+        <td>${exam.exam_year || "N/A"}</td>
+        <td>
+          <span class="exam-status ${statusClass}">${status}</span>
+        </td>
+        <td>${formattedDate}</td>
+        <td class="table-actions">
+          <a href="/?page=edit-exam&id=${
+            exam.id
+          }" class="btn btn-sm btn-warning btn-action" title="Modifier">
+            <i class="fas fa-edit"></i>
+          </a>
+          <button class="btn btn-sm btn-danger btn-action" title="Supprimer" onclick="confirmDelete(${
+            exam.id
+          }, '${escapeHtml(exam.title.replace(/'/g, "\\'"))}')">
+            <i class="fas fa-trash"></i>
+          </button>
+          <a href="/?page=examens&exam=${
+            exam.id
+          }" target="_blank" class="btn btn-sm btn-info btn-action" title="Voir l'examen">
+            <i class="fas fa-eye"></i>
+          </a>
+        </td>
+      </tr>
+    `;
   });
 
   tbody.innerHTML = html;
 }
 
 // Function to confirm deletion
-function confirmDelete(examId) {
-  if (
-    confirm(
-      "Êtes-vous sûr de vouloir supprimer cet examen ? Cette action est irréversible."
-    )
-  ) {
-    // For demo purposes - just show success message
-    // Backend will handle actual deletion
+async function confirmDelete(examId, examTitle) {
+  const confirmed = confirm(
+    `Êtes-vous sûr de vouloir supprimer l'examen "${examTitle}" ?\n\n` +
+      "Cette action est irréversible. Les fichiers PDF associés seront également supprimés."
+  );
 
-    showSuccessMessage("Examen supprimé avec succès!");
+  if (!confirmed) return;
 
-    // Reload exams after deletion
-    setTimeout(() => {
-      loadExams();
-    }, 500);
+  try {
+    // Show loading
+    const row = document.getElementById(`exam-row-${examId}`);
+    if (row) {
+      const originalHTML = row.innerHTML;
+      row.innerHTML = `
+        <td colspan="6" class="text-center">
+          <div class="spinner-border spinner-border-sm text-danger" role="status">
+            <span class="visually-hidden">Suppression en cours...</span>
+          </div>
+          <span class="ms-2">Suppression en cours...</span>
+        </td>
+      `;
+    }
 
-    console.log("Deleting exam:", examId);
+    // Send delete request
+    const response = await fetch(DELETE_EXAM_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ id: examId }),
+    });
 
-    // Backend implementation will be:
-    // window.location.href = '/delete-exam?id=' + examId;
+    const data = await response.json();
+
+    if (data.success) {
+      // Show success message
+      showSuccessMessage("Examen supprimé avec succès!");
+
+      // Remove row from table
+      if (row) {
+        row.remove();
+      }
+
+      // Reload exams after 1 second
+      setTimeout(() => {
+        loadExams();
+      }, 1000);
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error("Error deleting exam:", error);
+    showError("Erreur lors de la suppression: " + error.message);
+
+    // Restore row if exists
+    if (row) {
+      loadExams(); // Reload entire table
+    }
   }
 }
 
@@ -217,6 +278,45 @@ function showSuccessMessage(message) {
   }
 }
 
+// Function to show error message
+function showError(message) {
+  // Create error alert if it doesn't exist
+  let errorAlert = document.getElementById("error-message");
+  let errorText = document.getElementById("error-text");
+
+  if (!errorAlert) {
+    // Create error alert
+    const successAlert = document.getElementById("success-message");
+    errorAlert = successAlert.cloneNode(true);
+    errorAlert.id = "error-message";
+    errorAlert.classList.remove("alert-success");
+    errorAlert.classList.add("alert-danger");
+
+    const errorIcon = errorAlert.querySelector(".fa-check-circle");
+    if (errorIcon) {
+      errorIcon.classList.remove("fa-check-circle");
+      errorIcon.classList.add("fa-exclamation-triangle");
+    }
+
+    errorText = errorAlert.querySelector("#message-text");
+    if (errorText) {
+      errorText.id = "error-text";
+    }
+
+    successAlert.parentNode.insertBefore(errorAlert, successAlert.nextSibling);
+  }
+
+  if (errorText) {
+    errorText.textContent = message;
+    errorAlert.classList.remove("d-none");
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      errorAlert.classList.add("d-none");
+    }, 5000);
+  }
+}
+
 // Function to setup event listeners
 function setupEventListeners() {
   // Close button for success message
@@ -226,11 +326,77 @@ function setupEventListeners() {
       document.getElementById("success-message").classList.add("d-none");
     });
   }
+
+  // Setup sidebar navigation
+  setupSidebarNavigation();
+}
+
+// Function to setup sidebar navigation
+function setupSidebarNavigation() {
+  const navLinks = document.querySelectorAll(".nav-link");
+
+  // Highlight current page
+  highlightCurrentPage();
+
+  // Add click handlers
+  navLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      if (this.classList.contains("text-danger")) {
+        e.preventDefault();
+        logout();
+        return false;
+      }
+    });
+  });
+}
+
+// Function to highlight current page
+function highlightCurrentPage() {
+  const navLinks = document.querySelectorAll(".nav-link");
+  navLinks.forEach((link) => link.classList.remove("active"));
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentPage = urlParams.get("page") || "dashboard";
+
+  navLinks.forEach((link) => {
+    const href = link.getAttribute("href");
+    if (href && href.includes(`page=${currentPage}`)) {
+      link.classList.add("active");
+    }
+  });
+}
+
+// Function to handle logout
+async function logout() {
+  if (!confirm("Êtes-vous sûr de vouloir vous déconnecter?")) {
+    return;
+  }
+
+  try {
+    const response = await fetch("/backend/api/auth/logout.php", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      window.location.href = "/?page=login";
+    } else {
+      alert("Erreur lors de la déconnexion. Veuillez réessayer.");
+    }
+  } catch (error) {
+    console.error("Logout error:", error);
+    alert("Erreur de connexion. Veuillez réessayer.");
+  }
 }
 
 // Helper function to escape HTML
 function escapeHtml(text) {
+  if (!text) return "";
   const div = document.createElement("div");
   div.textContent = text;
   return div.innerHTML;
 }
+
+// Make functions available globally
+window.confirmDelete = confirmDelete;
+window.logout = logout;

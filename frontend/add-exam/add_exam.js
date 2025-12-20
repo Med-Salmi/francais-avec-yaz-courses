@@ -1,10 +1,14 @@
 /**
  * add_exam.js - Add Exam page JavaScript
+ * UPDATED: Now uses real API calls
  */
 
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Add Exam page loaded");
+
+  // First check authentication
+  checkAuth();
 
   // Get form and elements
   const addExamForm = document.getElementById("addExamForm");
@@ -34,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Form submission handler
   if (addExamForm) {
-    addExamForm.addEventListener("submit", function (e) {
+    addExamForm.addEventListener("submit", async function (e) {
       e.preventDefault();
 
       // Validate form
@@ -61,31 +65,67 @@ document.addEventListener("DOMContentLoaded", function () {
       submitBtn.innerHTML =
         '<i class="fas fa-spinner fa-spin me-2"></i>Enregistrement...';
 
-      // Simulate API call (will be replaced with backend)
-      setTimeout(() => {
-        // Get form data
-        const formData = getFormData();
-        console.log("Form data:", formData);
+      try {
+        // Create FormData object
+        const formData = new FormData();
 
-        // Show success message
-        showSuccessMessage(
-          "Examen ajouté avec succès! Vous allez être redirigé..."
+        // Add text fields
+        formData.append("title", document.getElementById("title").value.trim());
+        formData.append(
+          "description",
+          document.getElementById("description").value.trim()
         );
 
-        // Reset form
-        addExamForm.reset();
-        resetFileDisplays();
+        const examYear = document.getElementById("exam_year").value;
+        if (examYear) {
+          formData.append("exam_year", examYear);
+        }
 
+        // Add files if they exist
+        if (examFile) {
+          formData.append("exam_pdf", examFile);
+        }
+        if (correctionFile) {
+          formData.append("correction_pdf", correctionFile);
+        }
+
+        // Send request to backend API
+        const response = await fetch("/backend/api/exams/create.php", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showSuccessMessage(
+            "Examen ajouté avec succès! Vous allez être redirigé..."
+          );
+
+          // Reset form
+          addExamForm.reset();
+          resetFileDisplays();
+
+          // Reset year field to current year
+          document.getElementById("exam_year").value = new Date().getFullYear();
+
+          // Redirect to manage exams after 2 seconds
+          setTimeout(() => {
+            window.location.href = "/?page=manage-exams&added=1";
+          }, 2000);
+        } else {
+          throw new Error(result.message || "Erreur lors de la création");
+        }
+      } catch (error) {
+        console.error("Error creating exam:", error);
+        showError(error.message || "Erreur lors de l'enregistrement");
+      } finally {
         // Re-enable submit button
         submitBtn.disabled = false;
         submitBtn.innerHTML =
           '<i class="fas fa-save me-2"></i>Enregistrer l\'examen';
-
-        // Redirect to manage exams after 2 seconds
-        setTimeout(() => {
-          window.location.href = "/?page=manage-exams&added=1";
-        }, 2000);
-      }, 1500);
+      }
 
       return false;
     });
@@ -103,6 +143,8 @@ document.addEventListener("DOMContentLoaded", function () {
         addExamForm.reset();
         resetFileDisplays();
         hideAllAlerts();
+        // Reset year field to current year
+        document.getElementById("exam_year").value = new Date().getFullYear();
         console.log("Form reset");
       }
     });
@@ -211,6 +253,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Get form elements
     const title = document.getElementById("title").value.trim();
+    const examYear = document.getElementById("exam_year").value.trim();
     const examFile = examFileInput.files[0];
     const correctionFile = correctionFileInput.files[0];
 
@@ -229,6 +272,18 @@ document.addEventListener("DOMContentLoaded", function () {
       isValid = false;
     }
 
+    // Validate year (optional but if provided, must be valid)
+    if (examYear) {
+      const yearNum = parseInt(examYear);
+      const currentYear = new Date().getFullYear();
+
+      if (isNaN(yearNum) || yearNum < 2000 || yearNum > 2035) {
+        showError("L'année doit être comprise entre 2000 et 2035.");
+        document.getElementById("exam_year").classList.add("is-invalid");
+        isValid = false;
+      }
+    }
+
     // Validate files
     const maxSize = 10 * 1024 * 1024; // 10MB
 
@@ -245,21 +300,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     return isValid;
-  }
-
-  // Function to get form data
-  function getFormData() {
-    const formData = {
-      title: document.getElementById("title").value.trim(),
-      description: document.getElementById("description").value.trim(),
-      exam_year: document.getElementById("exam_year").value,
-      exam_file: examFileInput.files[0] ? examFileInput.files[0].name : null,
-      correction_file: correctionFileInput.files[0]
-        ? correctionFileInput.files[0].name
-        : null,
-    };
-
-    return formData;
   }
 
   // Function to show success message
@@ -363,11 +403,47 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Form validation on blur for required fields
-  document.getElementById("title").addEventListener("blur", function () {
-    if (!this.value.trim()) {
-      this.classList.add("is-invalid");
-    } else {
-      this.classList.remove("is-invalid");
-    }
-  });
+  const titleField = document.getElementById("title");
+  if (titleField) {
+    titleField.addEventListener("blur", function () {
+      if (!this.value.trim()) {
+        this.classList.add("is-invalid");
+      } else {
+        this.classList.remove("is-invalid");
+      }
+    });
+  }
+
+  // Year field validation on blur
+  const yearField = document.getElementById("exam_year");
+  if (yearField) {
+    yearField.addEventListener("blur", function () {
+      const value = this.value.trim();
+      if (value) {
+        const yearNum = parseInt(value);
+        if (isNaN(yearNum) || yearNum < 2000 || yearNum > 2035) {
+          this.classList.add("is-invalid");
+        } else {
+          this.classList.remove("is-invalid");
+        }
+      }
+    });
+  }
 });
+
+// Function to check authentication
+async function checkAuth() {
+  try {
+    const response = await fetch("/backend/api/auth/check.php", {
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      // Not authenticated, redirect to login
+      window.location.href = "/?page=login";
+    }
+  } catch (error) {
+    console.error("Auth check failed:", error);
+    window.location.href = "/?page=login";
+  }
+}

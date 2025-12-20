@@ -1,5 +1,12 @@
 <?php
-// add_exam.php - Add Exam page (Frontend only for now)
+// add_exam.php - Add Exam page
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header("Location: /?page=login");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -39,9 +46,6 @@
                     <a class="nav-link" href="/?page=manage-exams">
                         <i class="fas fa-file-alt me-2"></i>Gérer les Examens
                     </a>
-                    <!-- <a class="nav-link active" href="/?page=add-exam">
-                        <i class="fas fa-plus me-2"></i>Ajouter un Examen
-                    </a> -->
                     
                     <hr class="text-white-50 my-4">
                     
@@ -99,38 +103,26 @@
                                     
                                     <div class="mb-3">
                                         <label for="exam_year" class="form-label">Année scolaire</label>
-                                        <select class="form-control" id="exam_year" name="exam_year">
-                                            <option value="">Sélectionner une année...</option>
-                                            <?php
-                                            // Generate year options (current year and 5 years back)
-                                            $current_year = date('Y');
-                                            for ($year = $current_year; $year >= $current_year - 5; $year--) {
-                                                echo "<option value='$year'>$year</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                        <small class="text-muted">Laissez vide si non applicable</small>
+                                        <div class="input-group">
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   id="exam_year" 
+                                                   name="exam_year" 
+                                                   min="2000" 
+                                                   max="2035" 
+                                                   placeholder="Ex: 2024"
+                                                   value="<?php echo date('Y'); ?>">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </span>
+                                        </div>
+                                        <small class="text-muted">Saisissez l'année de l'examen (entre 2000 et 2035)</small>
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="col-md-4">
-                                <!-- Level Information -->
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <h6 class="mb-0"><i class="fas fa-university me-2"></i>Niveau</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="alert alert-info mb-0">
-                                            <i class="fas fa-info-circle me-2"></i>
-                                            <strong>Niveau fixe:</strong> 1ère Année Bac
-                                            <br>
-                                            <small>Tous les examens sont pour ce niveau.</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Status -->
+                                <!-- Tips Card -->
                                 <div class="card">
                                     <div class="card-header">
                                         <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Conseils</h6>
@@ -145,9 +137,13 @@
                                                 <i class="fas fa-check text-success me-2"></i>
                                                 <small>Format accepté: PDF uniquement</small>
                                             </li>
-                                            <li>
+                                            <li class="mb-2">
                                                 <i class="fas fa-check text-success me-2"></i>
                                                 <small>Vous pouvez ajouter sujet et correction séparément</small>
+                                            </li>
+                                            <li>
+                                                <i class="fas fa-check text-success me-2"></i>
+                                                <small>Année: Saisissez l'année scolaire (ex: 2024, 2025, etc.)</small>
                                             </li>
                                         </ul>
                                     </div>
