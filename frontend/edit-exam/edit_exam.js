@@ -1,10 +1,26 @@
 /**
  * edit_exam.js - Edit Exam page JavaScript
+ * UPDATED: Now uses real API calls
  */
+
+// API URLs
+const GET_EXAM_API = "/backend/api/exams/get_single.php";
+const UPDATE_EXAM_API = "/backend/api/exams/update.php";
+const DELETE_EXAM_API = "/backend/api/exams/delete.php";
 
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Edit Exam page loaded");
+
+  // Get exam ID from hidden div
+  const examDataDiv = document.getElementById("exam-data");
+  const examId = examDataDiv ? parseInt(examDataDiv.dataset.examId) : 0;
+
+  if (!examId || examId <= 0) {
+    showError("ID d'examen invalide.");
+    showNotFound();
+    return;
+  }
 
   // Get elements
   const loadingState = document.getElementById("loading-state");
@@ -37,47 +53,39 @@ document.addEventListener("DOMContentLoaded", function () {
   const examFileName = document.getElementById("exam_file_name");
   const correctionFileName = document.getElementById("correction_file_name");
 
-  // Simulated exam data (will be replaced with backend API)
-  const simulatedExam = {
-    id: 123,
-    title: "Contrôle Continu - Semestre 1",
-    description: "Examen de français pour le premier semestre",
-    exam_year: 2024,
-    exam_pdf_path: "uploads/exams/exam_123456789.pdf",
-    correction_pdf_path: "uploads/exams/correction_123456789.pdf",
-    level_slug: "1ere-annee-bac",
-    created_at: "2024-01-15 10:30:00",
-    updated_at: "2024-01-20 14:45:00",
-  };
-
   // Initialize the page
   initPage();
 
   // Function to initialize the page
-  function initPage() {
-    // Get exam ID from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const examId = urlParams.get("id") || simulatedExam.id;
+  async function initPage() {
+    // First check authentication
+    await checkAuth();
 
-    // Simulate loading data from backend
-    setTimeout(() => {
-      loadExamData(examId);
-    }, 1000);
+    // Load exam data from backend
+    await loadExamData(examId);
   }
 
-  // Function to load exam data
-  function loadExamData(examId) {
-    // In real implementation, this would be a fetch() call to backend
-    // For now, we'll use simulated data
-    const exam = simulatedExam;
+  // Function to load exam data from API
+  async function loadExamData(examId) {
+    try {
+      const response = await fetch(`${GET_EXAM_API}?id=${examId}`, {
+        credentials: "include",
+      });
 
-    if (exam) {
-      displayExamData(exam);
-      hideLoadingState();
-      showForm();
-    } else {
+      const result = await response.json();
+
+      if (result.success) {
+        displayExamData(result.data.exam);
+        hideLoadingState();
+        showForm();
+      } else {
+        throw new Error(result.message || "Examen non trouvé");
+      }
+    } catch (error) {
+      console.error("Error loading exam:", error);
       hideLoadingState();
       showNotFound();
+      showError("Erreur de chargement: " + error.message);
     }
   }
 
@@ -128,6 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Exam file
     if (exam.exam_pdf_path) {
       const filename = exam.exam_pdf_path.split("/").pop();
+      const fileUrl = exam.exam_pdf_url || exam.exam_pdf_path;
       currentExamFileContainer.innerHTML = `
         <div class="current-file">
           <div class="d-flex justify-content-between align-items-start">
@@ -136,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
               <strong>${filename}</strong>
               <br>
               <small>
-                <a href="#" class="text-decoration-none view-file-link" data-filename="${filename}">
+                <a href="${fileUrl}" target="_blank" class="text-decoration-none view-file-link">
                   <i class="fas fa-eye me-1"></i>Voir le fichier
                 </a>
               </small>
@@ -162,6 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Correction file
     if (exam.correction_pdf_path) {
       const filename = exam.correction_pdf_path.split("/").pop();
+      const fileUrl = exam.correction_pdf_url || exam.correction_pdf_path;
       currentCorrectionFileContainer.innerHTML = `
         <div class="current-file">
           <div class="d-flex justify-content-between align-items-start">
@@ -170,7 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
               <strong>${filename}</strong>
               <br>
               <small>
-                <a href="#" class="text-decoration-none view-file-link" data-filename="${filename}">
+                <a href="${fileUrl}" target="_blank" class="text-decoration-none view-file-link">
                   <i class="fas fa-eye me-1"></i>Voir le fichier
                 </a>
               </small>
@@ -199,17 +209,6 @@ document.addEventListener("DOMContentLoaded", function () {
       .forEach((checkbox) => {
         checkbox.addEventListener("change", handleDeleteCheckbox);
       });
-
-    // Add event listeners to view file links
-    document.querySelectorAll(".view-file-link").forEach((link) => {
-      link.addEventListener("click", function (e) {
-        e.preventDefault();
-        const filename = this.getAttribute("data-filename");
-        alert(
-          `Environnement réel: le fichier "${filename}" s'ouvrirait ici.\n\nPour la démo frontend, nous simulons l'action.`
-        );
-      });
-    });
   }
 
   // Function to handle delete checkbox changes
@@ -245,7 +244,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Form submission handler
   if (editExamForm) {
-    editExamForm.addEventListener("submit", function (e) {
+    editExamForm.addEventListener("submit", async function (e) {
       e.preventDefault();
 
       // Validate form
@@ -258,25 +257,89 @@ document.addEventListener("DOMContentLoaded", function () {
       submitBtn.innerHTML =
         '<i class="fas fa-spinner fa-spin me-2"></i>Enregistrement...';
 
-      // Simulate API call (will be replaced with backend)
-      setTimeout(() => {
-        // Get form data
-        const formData = getFormData();
-        console.log("Form data for update:", formData);
+      try {
+        // Create FormData object
+        const formData = new FormData();
 
-        // Show success message
-        showSuccessMessage(
-          "Examen modifié avec succès! Les modifications ont été enregistrées."
+        // Add text fields
+        formData.append("id", document.getElementById("exam_id").value);
+        formData.append("title", document.getElementById("title").value.trim());
+        formData.append(
+          "description",
+          document.getElementById("description").value.trim()
         );
 
-        // Update displayed data with new values
-        updateDisplayedData(formData);
+        const examYear = document.getElementById("exam_year").value;
+        if (examYear) {
+          formData.append("exam_year", examYear);
+        }
 
+        // Add delete flags
+        const deleteExamPdf = document.getElementById("delete_exam_pdf");
+        if (deleteExamPdf && deleteExamPdf.checked) {
+          formData.append("delete_exam_pdf", "1");
+        }
+
+        const deleteCorrectionPdf = document.getElementById(
+          "delete_correction_pdf"
+        );
+        if (deleteCorrectionPdf && deleteCorrectionPdf.checked) {
+          formData.append("delete_correction_pdf", "1");
+        }
+
+        // Add files if they exist
+        if (examFileInput.files[0]) {
+          formData.append("exam_pdf", examFileInput.files[0]);
+        }
+        if (correctionFileInput.files[0]) {
+          formData.append("correction_pdf", correctionFileInput.files[0]);
+        }
+
+        // Send update request to backend API
+        const response = await fetch(UPDATE_EXAM_API, {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showSuccessMessage(
+            "Examen modifié avec succès! Les modifications ont été enregistrées."
+          );
+
+          // Update displayed data with new values
+          displayExamData(result.data.exam);
+
+          // Reset file inputs
+          examFileInput.value = "";
+          correctionFileInput.value = "";
+          examFileName.innerHTML = "Aucun nouveau fichier sélectionné";
+          correctionFileName.innerHTML = "Aucun nouveau fichier sélectionné";
+          examUploadArea.classList.remove("file-upload-success");
+          correctionUploadArea.classList.remove("file-upload-success");
+
+          // Reset delete checkboxes
+          document
+            .querySelectorAll('input[type="checkbox"][name^="delete_"]')
+            .forEach((checkbox) => {
+              checkbox.checked = false;
+              checkbox.closest(".current-file").style.opacity = "";
+              checkbox.closest(".current-file").style.borderColor = "";
+            });
+        } else {
+          throw new Error(result.message || "Erreur lors de la mise à jour");
+        }
+      } catch (error) {
+        console.error("Error updating exam:", error);
+        showError(error.message || "Erreur lors de l'enregistrement");
+      } finally {
         // Re-enable submit button
         submitBtn.disabled = false;
         submitBtn.innerHTML =
           '<i class="fas fa-save me-2"></i>Enregistrer les modifications';
-      }, 1500);
+      }
 
       return false;
     });
@@ -292,7 +355,7 @@ document.addEventListener("DOMContentLoaded", function () {
         )
       ) {
         // Reload the form with original data
-        loadExamData(simulatedExam.id);
+        loadExamData(examId);
         hideAllAlerts();
         console.log("Form reset to original data");
       }
@@ -301,10 +364,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Delete button handler
   if (deleteBtn) {
-    deleteBtn.addEventListener("click", function () {
+    deleteBtn.addEventListener("click", async function () {
+      const examTitle = document.getElementById("title").value;
+
       if (
         confirm(
-          "Êtes-vous sûr de vouloir supprimer cet examen ? Cette action est irréversible.\n\nTous les fichiers associés seront également supprimés."
+          `Êtes-vous sûr de vouloir supprimer l'examen "${examTitle}" ?\n\nCette action est irréversible. Tous les fichiers associés seront également supprimés.`
         )
       ) {
         // Disable button and show loading
@@ -312,17 +377,37 @@ document.addEventListener("DOMContentLoaded", function () {
         deleteBtn.innerHTML =
           '<i class="fas fa-spinner fa-spin me-2"></i>Suppression...';
 
-        // Simulate deletion
-        setTimeout(() => {
-          showSuccessMessage(
-            "Examen supprimé avec succès ! Redirection en cours..."
-          );
+        try {
+          // Send delete request
+          const response = await fetch(DELETE_EXAM_API, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ id: examId }),
+          });
 
-          // Redirect to manage exams after 2 seconds
-          setTimeout(() => {
-            window.location.href = "/?page=manage-exams&deleted=1";
-          }, 2000);
-        }, 1500);
+          const result = await response.json();
+
+          if (result.success) {
+            showSuccessMessage(
+              "Examen supprimé avec succès ! Redirection en cours..."
+            );
+
+            // Redirect to manage exams after 2 seconds
+            setTimeout(() => {
+              window.location.href = "/?page=manage-exams&deleted=1";
+            }, 2000);
+          } else {
+            throw new Error(result.message || "Erreur lors de la suppression");
+          }
+        } catch (error) {
+          console.error("Error deleting exam:", error);
+          showError("Erreur lors de la suppression: " + error.message);
+          deleteBtn.disabled = false;
+          deleteBtn.innerHTML = '<i class="fas fa-trash me-2"></i>Supprimer';
+        }
       }
     });
   }
@@ -387,10 +472,10 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      // Validate file size (2MB max for edit)
-      const maxSize = 2 * 1024 * 1024;
+      // Validate file size (10MB max)
+      const maxSize = 10 * 1024 * 1024;
       if (file.size > maxSize) {
-        showError("Le fichier est trop volumineux. Maximum 2MB.");
+        showError("Le fichier est trop volumineux. Maximum 10MB.");
         input.value = "";
         display.innerHTML = "Aucun nouveau fichier sélectionné";
         display.parentElement.classList.remove("file-upload-success");
@@ -422,6 +507,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Get form elements
     const title = document.getElementById("title").value.trim();
+    const examYear = document.getElementById("exam_year").value.trim();
     const examFile = examFileInput.files[0];
     const correctionFile = correctionFileInput.files[0];
 
@@ -440,86 +526,32 @@ document.addEventListener("DOMContentLoaded", function () {
       isValid = false;
     }
 
-    // Validate files (2MB max for edit)
-    const maxSize = 2 * 1024 * 1024;
+    // Validate year (optional but if provided, must be valid)
+    if (examYear) {
+      const yearNum = parseInt(examYear);
+      if (isNaN(yearNum) || yearNum < 2000 || yearNum > 2035) {
+        showError("L'année doit être comprise entre 2000 et 2035.");
+        document.getElementById("exam_year").classList.add("is-invalid");
+        isValid = false;
+      }
+    }
+
+    // Validate files (10MB max)
+    const maxSize = 10 * 1024 * 1024;
 
     if (examFile && examFile.size > maxSize) {
-      showError("Le fichier sujet est trop volumineux (max 2MB).");
+      showError("Le fichier sujet est trop volumineux (max 10MB).");
       examUploadArea.classList.add("is-invalid");
       isValid = false;
     }
 
     if (correctionFile && correctionFile.size > maxSize) {
-      showError("Le fichier correction est trop volumineux (max 2MB).");
+      showError("Le fichier correction est trop volumineux (max 10MB).");
       correctionUploadArea.classList.add("is-invalid");
       isValid = false;
     }
 
     return isValid;
-  }
-
-  // Function to get form data
-  function getFormData() {
-    const deleteExamPdf = document.getElementById("delete_exam_pdf")
-      ? document.getElementById("delete_exam_pdf").checked
-      : false;
-    const deleteCorrectionPdf = document.getElementById("delete_correction_pdf")
-      ? document.getElementById("delete_correction_pdf").checked
-      : false;
-
-    const formData = {
-      exam_id: document.getElementById("exam_id").value,
-      title: document.getElementById("title").value.trim(),
-      description: document.getElementById("description").value.trim(),
-      exam_year: document.getElementById("exam_year").value,
-      delete_exam_pdf: deleteExamPdf,
-      delete_correction_pdf: deleteCorrectionPdf,
-      exam_file: examFileInput.files[0] ? examFileInput.files[0].name : null,
-      correction_file: correctionFileInput.files[0]
-        ? correctionFileInput.files[0].name
-        : null,
-    };
-
-    return formData;
-  }
-
-  // Function to update displayed data after successful edit
-  function updateDisplayedData(formData) {
-    // Update the simulated exam with new data
-    simulatedExam.title = formData.title;
-    simulatedExam.description = formData.description;
-    simulatedExam.exam_year = formData.exam_year;
-    simulatedExam.updated_at = new Date()
-      .toISOString()
-      .slice(0, 19)
-      .replace("T", " ");
-
-    // Handle file deletions
-    if (formData.delete_exam_pdf) {
-      simulatedExam.exam_pdf_path = null;
-    }
-    if (formData.delete_correction_pdf) {
-      simulatedExam.correction_pdf_path = null;
-    }
-
-    // Handle new file uploads (simulated)
-    if (formData.exam_file) {
-      simulatedExam.exam_pdf_path = `uploads/exams/${formData.exam_file}`;
-    }
-    if (formData.correction_file) {
-      simulatedExam.correction_pdf_path = `uploads/exams/${formData.correction_file}`;
-    }
-
-    // Update the display
-    displayExamData(simulatedExam);
-
-    // Reset file inputs
-    examFileInput.value = "";
-    correctionFileInput.value = "";
-    examFileName.innerHTML = "Aucun nouveau fichier sélectionné";
-    correctionFileName.innerHTML = "Aucun nouveau fichier sélectionné";
-    examUploadArea.classList.remove("file-upload-success");
-    correctionUploadArea.classList.remove("file-upload-success");
   }
 
   // Function to show success message
@@ -637,4 +669,100 @@ document.addEventListener("DOMContentLoaded", function () {
       descriptionField.dispatchEvent(new Event("input"));
     }, 100);
   }
+
+  // Year field validation on blur
+  const yearField = document.getElementById("exam_year");
+  if (yearField) {
+    yearField.addEventListener("blur", function () {
+      const value = this.value.trim();
+      if (value) {
+        const yearNum = parseInt(value);
+        if (isNaN(yearNum) || yearNum < 2000 || yearNum > 2035) {
+          this.classList.add("is-invalid");
+        } else {
+          this.classList.remove("is-invalid");
+        }
+      }
+    });
+  }
 });
+
+// Function to check authentication
+async function checkAuth() {
+  try {
+    const response = await fetch("/backend/api/auth/check.php", {
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      // Not authenticated, redirect to login
+      window.location.href = "/?page=login";
+    }
+  } catch (error) {
+    console.error("Auth check failed:", error);
+    window.location.href = "/?page=login";
+  }
+  // Setup sidebar navigation
+  setupSidebarNavigation();
+
+  // Function to setup sidebar navigation
+  function setupSidebarNavigation() {
+    const navLinks = document.querySelectorAll(".nav-link");
+
+    // Highlight current page
+    highlightCurrentPage();
+
+    // Add click handlers
+    navLinks.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        if (this.classList.contains("text-danger")) {
+          e.preventDefault();
+          logout();
+          return false;
+        }
+      });
+    });
+  }
+
+  // Function to highlight current page
+  function highlightCurrentPage() {
+    const navLinks = document.querySelectorAll(".nav-link");
+    navLinks.forEach((link) => link.classList.remove("active"));
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentPage = urlParams.get("page") || "edit-exam";
+
+    navLinks.forEach((link) => {
+      const href = link.getAttribute("href");
+      if (href && href.includes(`page=${currentPage}`)) {
+        link.classList.add("active");
+      }
+    });
+  }
+
+  // Function to handle logout
+  async function logout() {
+    if (!confirm("Êtes-vous sûr de vouloir vous déconnecter?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/backend/api/auth/logout.php", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        window.location.href = "/?page=login";
+      } else {
+        alert("Erreur lors de la déconnexion. Veuillez réessayer.");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Erreur de connexion. Veuillez réessayer.");
+    }
+  }
+
+  // Make logout function available globally
+  window.logout = logout;
+}

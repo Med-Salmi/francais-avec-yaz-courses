@@ -1,6 +1,15 @@
 <?php
-// edit_exam.php - Edit Exam page (Frontend only for now)
-// Note: For frontend-only, we'll simulate exam data with JavaScript
+// edit_exam.php - Edit Exam page
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header("Location: /?page=login");
+    exit;
+}
+
+// Get exam ID from URL for reference
+$exam_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -21,6 +30,9 @@
     </style>
 </head>
 <body>
+    <!-- Hidden data for JavaScript -->
+    <div id="exam-data" data-exam-id="<?php echo $exam_id; ?>" style="display: none;"></div>
+    
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
@@ -54,7 +66,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1 class="h3">
                         <i class="fas fa-edit me-2"></i>Modifier l'examen
-                        <small class="text-muted" id="exam-id">#123</small>
+                        <small class="text-muted" id="exam-id">#<?php echo $exam_id; ?></small>
                     </h1>
                     <a href="/?page=manage-exams" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-2"></i>Retour à la liste
@@ -86,7 +98,7 @@
                 <!-- Form (initially hidden) -->
                 <div class="form-container d-none" id="exam-form-container">
                     <form method="POST" action="" enctype="multipart/form-data" id="editExamForm">
-                        <input type="hidden" id="exam_id" name="exam_id" value="">
+                        <input type="hidden" id="exam_id" name="exam_id" value="<?php echo $exam_id; ?>">
                         
                         <div class="row">
                             <div class="col-md-8">
@@ -110,17 +122,19 @@
                                     
                                     <div class="mb-3">
                                         <label for="exam_year" class="form-label">Année scolaire</label>
-                                        <select class="form-control" id="exam_year" name="exam_year">
-                                            <option value="">Sélectionner une année...</option>
-                                            <?php
-                                            // Generate year options
-                                            $current_year = date('Y');
-                                            for ($year = $current_year; $year >= $current_year - 5; $year--) {
-                                                echo "<option value='$year'>$year</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                        <small class="text-muted">Laissez vide si non applicable</small>
+                                        <div class="input-group">
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   id="exam_year" 
+                                                   name="exam_year" 
+                                                   min="2000" 
+                                                   max="2035" 
+                                                   placeholder="Ex: 2024">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </span>
+                                        </div>
+                                        <small class="text-muted">Saisissez l'année de l'examen (entre 2000 et 2035)</small>
                                     </div>
                                 </div>
                             </div>
@@ -147,7 +161,7 @@
                                         <ul class="list-unstyled mb-0">
                                             <li class="mb-2">
                                                 <i class="fas fa-check text-success me-2"></i>
-                                                <small>Taille max: 2MB par fichier</small>
+                                                <small>Taille max: 10MB par fichier</small>
                                             </li>
                                             <li class="mb-2">
                                                 <i class="fas fa-check text-success me-2"></i>

@@ -1,0 +1,38 @@
+<!-- test_update.html -->
+<!DOCTYPE html>
+<html>
+  <body>
+    <h2>Test Update API</h2>
+    <button onclick="testUpdate()">Test Update</button>
+    <div id="result"></div>
+
+    <script>
+      async function testUpdate() {
+        const formData = new FormData();
+        formData.append("id", "7"); // Use actual exam ID
+        formData.append("title", "Test Updated Title");
+        formData.append("description", "Test description updated via API");
+        formData.append("exam_year", "2025");
+
+        try {
+          const response = await fetch("/backend/api/exams/update.php", {
+            method: "POST",
+            body: formData,
+            credentials: "include",
+          });
+
+          const result = await response.json();
+          document.getElementById("result").innerHTML = `<pre>${JSON.stringify(
+            result,
+            null,
+            2
+          )}</pre>`;
+        } catch (error) {
+          document.getElementById(
+            "result"
+          ).innerHTML = `Error: ${error.message}`;
+        }
+      }
+    </script>
+  </body>
+</html>
