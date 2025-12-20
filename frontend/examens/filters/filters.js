@@ -4,11 +4,15 @@
 
 // Global variables
 let currentYear = null;
-const sampleYears = [2025, 2024, 2023, 2022, 2021];
+let availableYears = []; // Will be populated from API
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Initialize
-  loadYearFilters(sampleYears);
+  // Listen for years update from exams grid
+  document.addEventListener("updateYearFilters", function (e) {
+    console.log("Updating year filters with:", e.detail.years);
+    availableYears = e.detail.years;
+    loadYearFilters(availableYears);
+  });
 
   // Clear filters button
   document
@@ -16,15 +20,18 @@ document.addEventListener("DOMContentLoaded", function () {
     .addEventListener("click", function () {
       clearYearFilter();
     });
+
+  // Initialize with empty array (will be updated after API call)
+  loadYearFilters([]);
 });
 
 // Function to load year filters
 function loadYearFilters(years) {
   const container = document.getElementById("year-filters");
 
-  if (years.length === 0) {
+  if (!years || years.length === 0) {
     container.innerHTML =
-      '<span class="text-muted">Aucune donnée disponible</span>';
+      '<span class="text-muted">Chargement des années...</span>';
     return;
   }
 
@@ -37,7 +44,8 @@ function loadYearFilters(years) {
         <i class="fas fa-calendar-alt me-2"></i>Toutes les années
     </button>`;
 
-  // Year buttons
+  // Year buttons (sorted descending)
+  years.sort((a, b) => b - a); // Most recent first
   years.forEach((year) => {
     html += `<button class="btn filter-btn ${
       currentYear === year ? "active" : ""
@@ -50,7 +58,7 @@ function loadYearFilters(years) {
   container.innerHTML = html;
 
   // Update results count
-  updateResultsCount(years.length);
+  updateResultsCount();
 }
 
 // Function to set year filter
@@ -65,18 +73,18 @@ function setYearFilter(year) {
   // Find and activate the clicked button
   const buttons = document.querySelectorAll(".filter-btn");
   buttons.forEach((btn) => {
-    const btnYear = btn.textContent.match(/\d{4}/); // Extract year from button text
-    if (
-      (year === null && btn.textContent.includes("Toutes")) ||
-      (btnYear && parseInt(btnYear[0]) === year)
-    ) {
+    if (year === null && btn.textContent.includes("Toutes")) {
       btn.classList.add("active");
+    } else if (year !== null) {
+      const btnYear = btn.textContent.match(/\d{4}/); // Extract year from button text
+      if (btnYear && parseInt(btnYear[0]) === year) {
+        btn.classList.add("active");
+      }
     }
   });
 
   // Update results count
-  const totalExams = 12; // Sample total
-  updateResultsCount(totalExams);
+  updateResultsCount();
 
   console.log("Year filter set to:", year);
 
@@ -93,14 +101,24 @@ function clearYearFilter() {
 }
 
 // Function to update results count
-function updateResultsCount(count) {
+function updateResultsCount() {
   const resultsElement = document.getElementById("results-count");
-  let message = `${count} examen${count !== 1 ? "s" : ""} disponible${
-    count !== 1 ? "s" : ""
-  }`;
+
+  if (availableYears.length === 0) {
+    resultsElement.textContent = "Chargement des données...";
+    return;
+  }
+
+  let message = "";
 
   if (currentYear) {
-    message += ` pour ${currentYear}`;
+    message = `Examens de ${currentYear}`;
+  } else {
+    const yearRange =
+      availableYears.length > 0
+        ? `${Math.min(...availableYears)}-${Math.max(...availableYears)}`
+        : "N/A";
+    message = `Examens disponibles (${yearRange})`;
   }
 
   resultsElement.textContent = message;

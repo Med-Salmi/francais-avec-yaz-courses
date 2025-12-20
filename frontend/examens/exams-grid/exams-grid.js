@@ -12,8 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
   loadExams(null);
 });
 
-// Function to load exams
-function loadExams(yearFilter) {
+// Function to load exams from REAL API
+async function loadExams(yearFilter) {
   const container = document.getElementById("exams-container");
   const badge = document.getElementById("exams-count-badge");
 
@@ -29,90 +29,68 @@ function loadExams(yearFilter) {
         </div>
     `;
 
-  // Simulate API delay
-  setTimeout(() => {
-    const exams = getSampleExams(yearFilter);
-    displayExams(exams);
-    badge.textContent = exams.length;
-  }, 800);
+  try {
+    // Build API URL with filters
+    let apiUrl = "/backend/api/exams/get.php?level=1ere-annee-bac";
+
+    if (yearFilter) {
+      apiUrl += `&year=${yearFilter}`;
+    }
+
+    console.log("Fetching exams from:", apiUrl);
+
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.success && data.data) {
+      // Use REAL exams from API
+      displayExams(data.data.exams);
+      badge.textContent = data.data.count;
+
+      // Update filter component with real years
+      if (data.data.filters && data.data.filters.years) {
+        updateFilterYears(data.data.filters.years);
+      }
+    } else {
+      throw new Error(data.message || "Invalid API response");
+    }
+  } catch (error) {
+    console.error("Error loading exams:", error);
+
+    // Show error message
+    container.innerHTML = `
+      <div class="col-12">
+        <div class="alert alert-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Erreur de chargement des examens.
+          <br><small>${error.message}</small>
+        </div>
+      </div>
+    `;
+
+    badge.textContent = "0";
+  }
 }
 
-// Function to get sample exams (filtered by year if provided)
-function getSampleExams(yearFilter) {
-  const allExams = [
-    {
-      id: 1,
-      title: "Examen de Français - Session Normale",
-      description:
-        "Examen complet de français pour la 1ère Année Bac. Compréhension de texte, grammaire, et rédaction.",
-      exam_year: 2025,
-      exam_pdf_path: "#",
-      correction_pdf_path: "#",
-      created_at: "2025-01-15",
-    },
-    {
-      id: 2,
-      title: "Examen de Français - Session de Rattrapage",
-      description:
-        "Examen de rattrapage avec questions sur la littérature française moderne.",
-      exam_year: 2024,
-      exam_pdf_path: "#",
-      correction_pdf_path: "#",
-      created_at: "2024-06-20",
-    },
-    {
-      id: 3,
-      title: "Contrôle Continu - Semestre 1",
-      description:
-        "Contrôle continu portant sur les figures de style et la poésie.",
-      exam_year: 2025,
-      exam_pdf_path: "#",
-      correction_pdf_path: null,
-      created_at: "2025-11-10",
-    },
-    {
-      id: 4,
-      title: "Examen Blanc - Préparation Bac",
-      description: "Examen blanc complet pour la préparation au baccalauréat.",
-      exam_year: 2023,
-      exam_pdf_path: "#",
-      correction_pdf_path: "#",
-      created_at: "2023-12-05",
-    },
-    {
-      id: 5,
-      title: "Test de Grammaire Avancée",
-      description: "Test approfondi sur les temps verbaux et la conjugaison.",
-      exam_year: 2025,
-      exam_pdf_path: "#",
-      correction_pdf_path: "#",
-      created_at: "2025-03-22",
-    },
-    {
-      id: 6,
-      title: "Examen de Littérature",
-      description:
-        "Analyse de texte littéraire et questions de culture générale.",
-      exam_year: 2022,
-      exam_pdf_path: "#",
-      correction_pdf_path: null,
-      created_at: "2022-05-18",
-    },
-  ];
-
-  if (!yearFilter) {
-    return allExams;
-  }
-
-  // Filter by year
-  return allExams.filter((exam) => exam.exam_year === yearFilter);
+// Function to update filter component with real years
+function updateFilterYears(realYears) {
+  // Dispatch event to filter component with real years
+  const event = new CustomEvent("updateYearFilters", {
+    detail: { years: realYears },
+  });
+  document.dispatchEvent(event);
 }
 
 // Function to display exams
 function displayExams(exams) {
   const container = document.getElementById("exams-container");
 
-  if (exams.length === 0) {
+  if (!exams || exams.length === 0) {
     container.innerHTML = `
             <div class="col-12">
                 <div class="no-results">
@@ -135,23 +113,44 @@ function displayExams(exams) {
     const col = document.createElement("div");
     col.className = "col-lg-6 mb-4";
 
+    // Format description (fallback if empty)
+    const description =
+      exam.description && exam.description.trim() !== ""
+        ? exam.description
+        : "Examen de français pour la 1ère Année Bac.";
+
+    // Format subject (if available)
+    const subjectBadge = exam.subject
+      ? `<span class="exam-badge subject">
+            <i class="fas fa-book me-1"></i>
+            ${exam.subject}
+         </span>`
+      : "";
+
     // Determine what buttons to show
     const examButton = exam.exam_pdf_path
-      ? `<a href="${exam.exam_pdf_path}" class="btn-download btn-download-exam" download>
+      ? `<a href="${exam.exam_pdf_path}" class="btn-download btn-download-exam" target="_blank">
            <i class="fas fa-file-pdf me-2"></i>Télécharger le sujet
          </a>`
       : '<span class="text-muted p-3 d-inline-block">Sujet non disponible</span>';
 
     const correctionButton = exam.correction_pdf_path
-      ? `<a href="${exam.correction_pdf_path}" class="btn-download btn-download-correction" download>
+      ? `<a href="${exam.correction_pdf_path}" class="btn-download btn-download-correction" target="_blank">
            <i class="fas fa-check-circle me-2"></i>Télécharger la correction
          </a>`
       : '<span class="text-muted p-3 d-inline-block">Correction non disponible</span>';
 
+    // Format date
+    const createdDate = exam.created_at
+      ? new Date(exam.created_at).toLocaleDateString("fr-FR")
+      : "Date inconnue";
+
     col.innerHTML = `
             <div class="exam-card">
                 <div class="exam-header">
-                    <h4 class="exam-title">${exam.title}</h4>
+                    <h4 class="exam-title">${
+                      exam.title || "Examen sans titre"
+                    }</h4>
                     <div class="d-flex flex-wrap">
                         <span class="exam-badge level">
                             <i class="fas fa-university me-1"></i>
@@ -161,10 +160,11 @@ function displayExams(exams) {
                             <i class="fas fa-calendar me-1"></i>
                             ${exam.exam_year || "N/A"}
                         </span>
+                        ${subjectBadge}
                     </div>
                 </div>
                 <div class="exam-body">
-                    <p class="exam-description">${exam.description}</p>
+                    <p class="exam-description">${description}</p>
                     <div class="exam-actions">
                         ${examButton}
                         ${correctionButton}
@@ -172,9 +172,7 @@ function displayExams(exams) {
                     <div class="mt-3 text-end">
                         <small class="text-muted">
                             <i class="far fa-clock me-1"></i>
-                            Ajouté le ${new Date(
-                              exam.created_at
-                            ).toLocaleDateString("fr-FR")}
+                            Ajouté le ${createdDate}
                         </small>
                     </div>
                 </div>
