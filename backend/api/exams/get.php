@@ -15,8 +15,19 @@ $level_slug = '1ere-annee-bac';
 try {
     $conn = getDBConnection();
     
-    // Build query
-    $query = "SELECT * FROM exams WHERE level_slug = ?";
+    // Build query - SELECT specific columns including the new ones
+    $query = "SELECT 
+                id, 
+                title, 
+                description, 
+                exam_pdf_path, 
+                correction_langue_path, 
+                correction_production_path,
+                level_slug, 
+                exam_year, 
+                created_at 
+              FROM exams 
+              WHERE level_slug = ?";
     $params = [$level_slug];
     $types = "s";
     
@@ -39,13 +50,18 @@ try {
     
     $exams = [];
     while ($row = $result->fetch_assoc()) {
-        // Ensure PDF paths are complete URLs
+        // Add URLs for all file types
         if (!empty($row['exam_pdf_path'])) {
-            $row['exam_pdf_url'] = $row['exam_pdf_path']; // Already absolute path
+            // Ensure path has leading slash
+            $row['exam_pdf_url'] = '/' . ltrim($row['exam_pdf_path'], '/');
         }
         
-        if (!empty($row['correction_pdf_path'])) {
-            $row['correction_pdf_url'] = $row['correction_pdf_path']; // Already absolute path
+        if (!empty($row['correction_langue_path'])) {
+            $row['correction_langue_url'] = '/' . ltrim($row['correction_langue_path'], '/');
+        }
+        
+        if (!empty($row['correction_production_path'])) {
+            $row['correction_production_url'] = '/' . ltrim($row['correction_production_path'], '/');
         }
         
         $exams[] = $row;

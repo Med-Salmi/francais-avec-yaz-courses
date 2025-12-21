@@ -3,6 +3,10 @@
   --primary-color: #4361ee;
   --secondary-color: #3a0ca3;
   --success-color: #38b000;
+  --success-light: #4ccd1d;
+  --success-dark: #2d9a00;
+  --success-langue: #2ecc71; /* Green for langue */
+  --success-production: #27ae60; /* Darker green for production */
   --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
@@ -71,6 +75,7 @@
   flex-wrap: wrap;
 }
 
+/* Subject Download Button */
 .btn-download {
   flex: 1;
   min-width: 140px;
@@ -83,12 +88,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border: 2px solid transparent;
 }
 
 .btn-download-exam {
   background: var(--primary-color);
   color: white;
-  border: 2px solid var(--primary-color);
+  border-color: var(--primary-color);
 }
 
 .btn-download-exam:hover {
@@ -99,18 +105,48 @@
   box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
 }
 
-.btn-download-correction {
-  background: var(--success-color);
+/* Correction Language Button - Green */
+.btn-download-correction-langue {
+  background: var(--success-langue);
   color: white;
-  border: 2px solid var(--success-color);
+  border-color: var(--success-langue);
 }
 
-.btn-download-correction:hover {
-  background: #2d9a00;
-  border-color: #2d9a00;
+.btn-download-correction-langue:hover {
+  background: #25a25a;
+  border-color: #25a25a;
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(56, 176, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+}
+
+/* Correction Production Button - Darker Green */
+.btn-download-correction-production {
+  background: var(--success-production);
+  color: white;
+  border-color: var(--success-production);
+}
+
+.btn-download-correction-production:hover {
+  background: #1e8449;
+  border-color: #1e8449;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
+/* Corrections group layout */
+.corrections-group {
+  width: 100%;
+}
+
+.corrections-group .d-flex {
+  gap: 0.75rem;
+}
+
+.corrections-group .btn-download {
+  flex: 1;
+  min-width: calc(50% - 0.375rem);
 }
 
 /* No Results */
@@ -145,6 +181,21 @@
   flex: 1;
 }
 
+/* Button icons */
+.btn-download i {
+  font-size: 1.1em;
+}
+
+/* Download group - Subject button container */
+.download-group {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.download-group .btn-download-exam {
+  width: 100%;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .exam-actions {
@@ -153,5 +204,19 @@
 
   .btn-download {
     width: 100%;
+  }
+
+  .corrections-group .d-flex {
+    flex-direction: column;
+  }
+
+  .corrections-group .btn-download {
+    min-width: 100%;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+  .corrections-group .btn-download {
+    min-width: calc(50% - 0.5rem);
   }
 }

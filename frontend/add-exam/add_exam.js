@@ -1,6 +1,6 @@
 /**
  * add_exam.js - Add Exam page JavaScript
- * UPDATED: Now uses real API calls with sidebar navigation
+ * UPDATED: Now handles 3 file uploads (exam, correction_langue, correction_production)
  */
 
 // Wait for DOM to be fully loaded
@@ -18,22 +18,43 @@ document.addEventListener("DOMContentLoaded", function () {
   const errorText = document.getElementById("error-text");
   const resetBtn = document.getElementById("reset-btn");
   const submitBtn = document.getElementById("submit-btn");
+
+  // File upload elements (UPDATED: 3 instead of 2)
   const examUploadArea = document.getElementById("exam-upload-area");
-  const correctionUploadArea = document.getElementById(
-    "correction-upload-area"
+  const correctionLangueUploadArea = document.getElementById(
+    "correction-langue-upload-area"
+  );
+  const correctionProductionUploadArea = document.getElementById(
+    "correction-production-upload-area"
   );
   const examFileInput = document.getElementById("exam_pdf");
-  const correctionFileInput = document.getElementById("correction_pdf");
+  const correctionLangueFileInput = document.getElementById(
+    "correction_langue_pdf"
+  );
+  const correctionProductionFileInput = document.getElementById(
+    "correction_production_pdf"
+  );
   const examFileName = document.getElementById("exam_file_name");
-  const correctionFileName = document.getElementById("correction_file_name");
+  const correctionLangueFileName = document.getElementById(
+    "correction_langue_file_name"
+  );
+  const correctionProductionFileName = document.getElementById(
+    "correction_production_file_name"
+  );
 
-  // Initialize file upload areas
+  // Initialize file upload areas (UPDATED: 3 instead of 2)
   initFileUploadArea(examUploadArea, examFileInput, examFileName, "exam");
   initFileUploadArea(
-    correctionUploadArea,
-    correctionFileInput,
-    correctionFileName,
-    "correction"
+    correctionLangueUploadArea,
+    correctionLangueFileInput,
+    correctionLangueFileName,
+    "correction_langue"
+  );
+  initFileUploadArea(
+    correctionProductionUploadArea,
+    correctionProductionFileInput,
+    correctionProductionFileName,
+    "correction_production"
   );
 
   // Form submission handler
@@ -46,11 +67,12 @@ document.addEventListener("DOMContentLoaded", function () {
         return false;
       }
 
-      // Check if user wants to proceed without files
+      // Check if user wants to proceed without files (UPDATED: 3 files)
       const examFile = examFileInput.files[0];
-      const correctionFile = correctionFileInput.files[0];
+      const correctionLangueFile = correctionLangueFileInput.files[0];
+      const correctionProductionFile = correctionProductionFileInput.files[0];
 
-      if (!examFile && !correctionFile) {
+      if (!examFile && !correctionLangueFile && !correctionProductionFile) {
         if (
           !confirm(
             "Aucun fichier PDF n'a été sélectionné. Voulez-vous continuer sans fichier ?"
@@ -81,12 +103,18 @@ document.addEventListener("DOMContentLoaded", function () {
           formData.append("exam_year", examYear);
         }
 
-        // Add files if they exist
+        // Add files if they exist (UPDATED: 3 files instead of 2)
         if (examFile) {
           formData.append("exam_pdf", examFile);
         }
-        if (correctionFile) {
-          formData.append("correction_pdf", correctionFile);
+        if (correctionLangueFile) {
+          formData.append("correction_langue_pdf", correctionLangueFile);
+        }
+        if (correctionProductionFile) {
+          formData.append(
+            "correction_production_pdf",
+            correctionProductionFile
+          );
         }
 
         // Send request to backend API
@@ -239,15 +267,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Function to reset file displays
+  // Function to reset file displays (UPDATED: 3 instead of 2)
   function resetFileDisplays() {
     examFileName.innerHTML = "Aucun fichier sélectionné";
-    correctionFileName.innerHTML = "Aucun fichier sélectionné";
+    correctionLangueFileName.innerHTML = "Aucun fichier sélectionné";
+    correctionProductionFileName.innerHTML = "Aucun fichier sélectionné";
     examUploadArea.classList.remove("file-upload-success");
-    correctionUploadArea.classList.remove("file-upload-success");
+    correctionLangueUploadArea.classList.remove("file-upload-success");
+    correctionProductionUploadArea.classList.remove("file-upload-success");
   }
 
-  // Function to validate form
+  // Function to validate form (UPDATED: 3 files instead of 2)
   function validateForm() {
     let isValid = true;
 
@@ -255,7 +285,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const title = document.getElementById("title").value.trim();
     const examYear = document.getElementById("exam_year").value.trim();
     const examFile = examFileInput.files[0];
-    const correctionFile = correctionFileInput.files[0];
+    const correctionLangueFile = correctionLangueFileInput.files[0];
+    const correctionProductionFile = correctionProductionFileInput.files[0];
 
     // Reset all error states
     hideAllAlerts();
@@ -284,7 +315,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    // Validate files
+    // Validate files (UPDATED: 3 files instead of 2)
     const maxSize = 10 * 1024 * 1024; // 10MB
 
     if (examFile && examFile.size > maxSize) {
@@ -293,9 +324,17 @@ document.addEventListener("DOMContentLoaded", function () {
       isValid = false;
     }
 
-    if (correctionFile && correctionFile.size > maxSize) {
-      showError("Le fichier correction est trop volumineux (max 10MB).");
-      correctionUploadArea.classList.add("is-invalid");
+    if (correctionLangueFile && correctionLangueFile.size > maxSize) {
+      showError("Le fichier correction langue est trop volumineux (max 10MB).");
+      correctionLangueUploadArea.classList.add("is-invalid");
+      isValid = false;
+    }
+
+    if (correctionProductionFile && correctionProductionFile.size > maxSize) {
+      showError(
+        "Le fichier correction production est trop volumineux (max 10MB)."
+      );
+      correctionProductionUploadArea.classList.add("is-invalid");
       isValid = false;
     }
 
@@ -383,23 +422,30 @@ document.addEventListener("DOMContentLoaded", function () {
     descriptionField.dispatchEvent(new Event("input"));
   }
 
-  // Add visual feedback for drag over
-  const uploadAreas = document.querySelectorAll(".file-upload-area");
+  // Add visual feedback for drag over (UPDATED: 3 areas instead of 2)
+  const uploadAreas = [
+    examUploadArea,
+    correctionLangueUploadArea,
+    correctionProductionUploadArea,
+  ];
+
   uploadAreas.forEach((area) => {
-    area.addEventListener("dragover", function () {
-      this.style.borderColor = "#4361ee";
-      this.style.backgroundColor = "#f0f4ff";
-    });
+    if (area) {
+      area.addEventListener("dragover", function () {
+        this.style.borderColor = "#4361ee";
+        this.style.backgroundColor = "#f0f4ff";
+      });
 
-    area.addEventListener("dragleave", function () {
-      this.style.borderColor = "";
-      this.style.backgroundColor = "";
-    });
+      area.addEventListener("dragleave", function () {
+        this.style.borderColor = "";
+        this.style.backgroundColor = "";
+      });
 
-    area.addEventListener("drop", function () {
-      this.style.borderColor = "";
-      this.style.backgroundColor = "";
-    });
+      area.addEventListener("drop", function () {
+        this.style.borderColor = "";
+        this.style.backgroundColor = "";
+      });
+    }
   });
 
   // Form validation on blur for required fields
@@ -430,7 +476,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Setup sidebar navigation (ADDED)
+  // Setup sidebar navigation
   setupSidebarNavigation();
 });
 
@@ -451,7 +497,7 @@ async function checkAuth() {
   }
 }
 
-// Function to setup sidebar navigation (ADDED)
+// Function to setup sidebar navigation
 function setupSidebarNavigation() {
   const navLinks = document.querySelectorAll(".nav-link");
 
@@ -470,7 +516,7 @@ function setupSidebarNavigation() {
   });
 }
 
-// Function to highlight current page (ADDED)
+// Function to highlight current page
 function highlightCurrentPage() {
   const navLinks = document.querySelectorAll(".nav-link");
   navLinks.forEach((link) => link.classList.remove("active"));
@@ -486,7 +532,7 @@ function highlightCurrentPage() {
   });
 }
 
-// Function to handle logout (ADDED)
+// Function to handle logout
 async function logout() {
   if (!confirm("Êtes-vous sûr de vouloir vous déconnecter?")) {
     return;
@@ -509,5 +555,5 @@ async function logout() {
   }
 }
 
-// Make logout function available globally (ADDED)
+// Make logout function available globally
 window.logout = logout;

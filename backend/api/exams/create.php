@@ -1,5 +1,7 @@
 <?php
 // /backend/api/exams/create.php - Create new exam
+// UPDATED: Now handles 3 file uploads (exam, correction_langue, correction_production)
+// UPDATED: Fixed upload path to include 'backend/'
 
 // Turn off error display but log them
 error_reporting(E_ALL);
@@ -53,9 +55,10 @@ $level_slug = '1ere-annee-bac'; // Fixed level
 try {
     $conn = getDBConnection();
     
-    // Handle file uploads
+    // Handle file uploads (UPDATED: 3 files instead of 2)
     $exam_pdf_path = null;
-    $correction_pdf_path = null;
+    $correction_langue_path = null;
+    $correction_production_path = null;
     
     // Function to upload PDF file
     function uploadPDFFile($file_input, $type) {
@@ -90,7 +93,7 @@ try {
         $safe_name = preg_replace('/[^a-zA-Z0-9\._-]/', '_', $original_name);
         $filename = "{$type}_{$timestamp}_{$random_id}_{$safe_name}";
         
-        // Use absolute path for uploads - fix the path issue
+        // Use absolute path for uploads - files go to backend/uploads/exams/
         $upload_dir = dirname(__DIR__, 2) . '/uploads/exams/';
         
         // Create directory if it doesn't exist
@@ -114,8 +117,8 @@ try {
             throw new Exception("Erreur lors de l'enregistrement du fichier $type: $error_msg");
         }
         
-        // Return relative path for database storage
-        return 'uploads/exams/' . $filename;
+        // Return relative path for database storage - include 'backend/' in path
+        return 'backend/uploads/exams/' . $filename;
     }
     
     // Upload exam PDF if provided
@@ -123,26 +126,32 @@ try {
         $exam_pdf_path = uploadPDFFile($_FILES['exam_pdf'], 'exam');
     }
     
-    // Upload correction PDF if provided
-    if (isset($_FILES['correction_pdf']) && $_FILES['correction_pdf']['error'] != UPLOAD_ERR_NO_FILE) {
-        $correction_pdf_path = uploadPDFFile($_FILES['correction_pdf'], 'correction');
+    // Upload correction langue PDF if provided (UPDATED: new field)
+    if (isset($_FILES['correction_langue_pdf']) && $_FILES['correction_langue_pdf']['error'] != UPLOAD_ERR_NO_FILE) {
+        $correction_langue_path = uploadPDFFile($_FILES['correction_langue_pdf'], 'correction_langue');
     }
     
-    // Check that at least one file is uploaded
-    if (!$exam_pdf_path && !$correction_pdf_path) {
+    // Upload correction production PDF if provided (UPDATED: new field)
+    if (isset($_FILES['correction_production_pdf']) && $_FILES['correction_production_pdf']['error'] != UPLOAD_ERR_NO_FILE) {
+        $correction_production_path = uploadPDFFile($_FILES['correction_production_pdf'], 'correction_production');
+    }
+    
+    // Check that at least one file is uploaded (UPDATED: now checks any of the 3 files)
+    if (!$exam_pdf_path && !$correction_langue_path && !$correction_production_path) {
         jsonResponse(false, 'Veuillez télécharger au moins un fichier PDF (sujet ou correction).');
     }
     
-    // Insert exam into database
+    // Insert exam into database (UPDATED: new columns)
     $stmt = $conn->prepare("
         INSERT INTO exams (
             title, 
             description, 
             exam_pdf_path, 
-            correction_pdf_path, 
+            correction_langue_path, 
+            correction_production_path,
             level_slug, 
             exam_year
-        ) VALUES (?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
     
     if (!$stmt) {
@@ -150,11 +159,12 @@ try {
     }
     
     $stmt->bind_param(
-        "sssssi",
+        "ssssssi",
         $title,
         $description,
         $exam_pdf_path,
-        $correction_pdf_path,
+        $correction_langue_path,
+        $correction_production_path,
         $level_slug,
         $exam_year
     );
@@ -172,12 +182,15 @@ try {
     $result = $select_stmt->get_result();
     $created_exam = $result->fetch_assoc();
     
-    // Convert file paths to URLs
+    // Convert file paths to URLs (UPDATED: 3 files instead of 2)
     if (!empty($created_exam['exam_pdf_path'])) {
-        $created_exam['exam_pdf_url'] = '/' . $created_exam['exam_pdf_path'];
+        $created_exam['exam_pdf_url'] = '/' . ltrim($created_exam['exam_pdf_path'], '/');
     }
-    if (!empty($created_exam['correction_pdf_path'])) {
-        $created_exam['correction_pdf_url'] = '/' . $created_exam['correction_pdf_path'];
+    if (!empty($created_exam['correction_langue_path'])) {
+        $created_exam['correction_langue_url'] = '/' . ltrim($created_exam['correction_langue_path'], '/');
+    }
+    if (!empty($created_exam['correction_production_path'])) {
+        $created_exam['correction_production_url'] = '/' . ltrim($created_exam['correction_production_path'], '/');
     }
     
     $stmt->close();
@@ -193,12 +206,15 @@ try {
     ]);
     
 } catch (Exception $e) {
-    // Clean up uploaded files if there was an error
+    // Clean up uploaded files if there was an error (UPDATED: 3 files instead of 2)
     if ($exam_pdf_path && file_exists(dirname(__DIR__, 2) . '/' . $exam_pdf_path)) {
         @unlink(dirname(__DIR__, 2) . '/' . $exam_pdf_path);
     }
-    if ($correction_pdf_path && file_exists(dirname(__DIR__, 2) . '/' . $correction_pdf_path)) {
-        @unlink(dirname(__DIR__, 2) . '/' . $correction_pdf_path);
+    if ($correction_langue_path && file_exists(dirname(__DIR__, 2) . '/' . $correction_langue_path)) {
+        @unlink(dirname(__DIR__, 2) . '/' . $correction_langue_path);
+    }
+    if ($correction_production_path && file_exists(dirname(__DIR__, 2) . '/' . $correction_production_path)) {
+        @unlink(dirname(__DIR__, 2) . '/' . $correction_production_path);
     }
     
     // Clear output buffer

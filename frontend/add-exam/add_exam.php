@@ -139,7 +139,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                             </li>
                                             <li class="mb-2">
                                                 <i class="fas fa-check text-success me-2"></i>
-                                                <small>Vous pouvez ajouter sujet et correction séparément</small>
+                                                <small>Vous pouvez ajouter sujet et corrections séparément</small>
                                             </li>
                                             <li>
                                                 <i class="fas fa-check text-success me-2"></i>
@@ -153,33 +153,52 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         
                         <!-- File Uploads -->
                         <div class="row mt-4">
-                            <div class="col-md-6 mb-4">
+                            <!-- Sujet de l'examen -->
+                            <div class="col-md-4 mb-4">
                                 <h5 class="mb-3">
-                                    <i class="fas fa-file-pdf me-2"></i>Sujet de l'examen (PDF)
+                                    <i class="fas fa-file-pdf me-2 text-primary"></i>Sujet de l'examen (PDF)
                                 </h5>
                                 <div class="file-upload-area" id="exam-upload-area">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                     <h6>Cliquez pour télécharger le sujet</h6>
                                     <p class="text-muted">ou glissez-déposez le fichier PDF</p>
                                     <input type="file" id="exam_pdf" name="exam_pdf" 
-                                           accept=".pdf,application/pdf" class="d-none">
+                                        accept=".pdf,application/pdf" class="d-none">
                                     <div id="exam_file_name" class="file-info">
                                         Aucun fichier sélectionné
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="col-md-6 mb-4">
+                            <!-- Correction Langue -->
+                            <div class="col-md-4 mb-4">
                                 <h5 class="mb-3">
-                                    <i class="fas fa-check-circle me-2"></i>Correction (PDF)
+                                    <i class="fas fa-language me-2 text-success"></i>Correction Langue (PDF)
                                 </h5>
-                                <div class="file-upload-area" id="correction-upload-area">
+                                <div class="file-upload-area" id="correction-langue-upload-area">
                                     <i class="fas fa-cloud-upload-alt"></i>
-                                    <h6>Cliquez pour télécharger la correction</h6>
+                                    <h6>Cliquez pour télécharger la correction langue</h6>
                                     <p class="text-muted">ou glissez-déposez le fichier PDF</p>
-                                    <input type="file" id="correction_pdf" name="correction_pdf" 
-                                           accept=".pdf,application/pdf" class="d-none">
-                                    <div id="correction_file_name" class="file-info">
+                                    <input type="file" id="correction_langue_pdf" name="correction_langue_pdf" 
+                                        accept=".pdf,application/pdf" class="d-none">
+                                    <div id="correction_langue_file_name" class="file-info">
+                                        Aucun fichier sélectionné
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Correction Production -->
+                            <div class="col-md-4 mb-4">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-edit me-2 text-warning"></i>Correction Production (PDF)
+                                </h5>
+                                <div class="file-upload-area" id="correction-production-upload-area">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <h6>Cliquez pour télécharger la correction production</h6>
+                                    <p class="text-muted">ou glissez-déposez le fichier PDF</p>
+                                    <input type="file" id="correction_production_pdf" name="correction_production_pdf" 
+                                        accept=".pdf,application/pdf" class="d-none">
+                                    <div id="correction_production_file_name" class="file-info">
                                         Aucun fichier sélectionné
                                     </div>
                                 </div>

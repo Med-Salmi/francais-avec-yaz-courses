@@ -119,18 +119,24 @@ function displayExams(exams) {
         ? exam.description
         : "Examen de français pour la 1ère Année Bac.";
 
-    // Determine what buttons to show
+    // Create download buttons based on available files
     const examButton = exam.exam_pdf_path
       ? `<a href="${exam.exam_pdf_path}" class="btn-download btn-download-exam" target="_blank">
            <i class="fas fa-file-pdf me-2"></i>Télécharger le sujet
          </a>`
       : '<span class="text-muted p-3 d-inline-block">Sujet non disponible</span>';
 
-    const correctionButton = exam.correction_pdf_path
-      ? `<a href="${exam.correction_pdf_path}" class="btn-download btn-download-correction" target="_blank">
-           <i class="fas fa-check-circle me-2"></i>Télécharger la correction
+    const correctionLangueButton = exam.correction_langue_path
+      ? `<a href="${exam.correction_langue_path}" class="btn-download btn-download-correction-langue" target="_blank">
+           <i class="fas fa-language me-2"></i>Correction Langue
          </a>`
-      : '<span class="text-muted p-3 d-inline-block">Correction non disponible</span>';
+      : '<span class="text-muted p-3 d-inline-block">Correction Langue non disponible</span>';
+
+    const correctionProductionButton = exam.correction_production_path
+      ? `<a href="${exam.correction_production_path}" class="btn-download btn-download-correction-production" target="_blank">
+           <i class="fas fa-edit me-2"></i>Correction Production
+         </a>`
+      : '<span class="text-muted p-3 d-inline-block">Correction Production non disponible</span>';
 
     // Format date
     const createdDate = exam.created_at
@@ -157,8 +163,15 @@ function displayExams(exams) {
                 <div class="exam-body">
                     <p class="exam-description">${description}</p>
                     <div class="exam-actions">
-                        ${examButton}
-                        ${correctionButton}
+                        <div class="download-group">
+                            ${examButton}
+                        </div>
+                        <div class="corrections-group mt-2">
+                            <div class="d-flex flex-wrap gap-2">
+                                ${correctionLangueButton}
+                                ${correctionProductionButton}
+                            </div>
+                        </div>
                     </div>
                     <div class="mt-3 text-end">
                         <small class="text-muted">
