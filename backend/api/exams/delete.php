@@ -1,5 +1,6 @@
 <?php
 // backend/api/exams/delete.php - Delete exam
+// UPDATED: Now deletes 3 files instead of 2
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -33,8 +34,8 @@ if ($exam_id <= 0) {
 try {
     $conn = getDBConnection();
     
-    // First get exam info to delete files
-    $stmt = $conn->prepare("SELECT exam_pdf_path, correction_pdf_path FROM exams WHERE id = ?");
+    // First get exam info to delete files (UPDATED: 3 files instead of 2)
+    $stmt = $conn->prepare("SELECT exam_pdf_path, correction_langue_path, correction_production_path FROM exams WHERE id = ?");
     $stmt->bind_param("i", $exam_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -52,13 +53,17 @@ try {
     if ($stmt->execute()) {
         $affected_rows = $stmt->affected_rows;
         
-        // Delete associated PDF files if they exist
-        if (!empty($exam['exam_pdf_path']) && file_exists($exam['exam_pdf_path'])) {
-            unlink($exam['exam_pdf_path']);
+        // Delete associated PDF files if they exist (UPDATED: 3 files instead of 2)
+        if (!empty($exam['exam_pdf_path']) && file_exists(dirname(__DIR__, 2) . '/' . $exam['exam_pdf_path'])) {
+            unlink(dirname(__DIR__, 2) . '/' . $exam['exam_pdf_path']);
         }
         
-        if (!empty($exam['correction_pdf_path']) && file_exists($exam['correction_pdf_path'])) {
-            unlink($exam['correction_pdf_path']);
+        if (!empty($exam['correction_langue_path']) && file_exists(dirname(__DIR__, 2) . '/' . $exam['correction_langue_path'])) {
+            unlink(dirname(__DIR__, 2) . '/' . $exam['correction_langue_path']);
+        }
+        
+        if (!empty($exam['correction_production_path']) && file_exists(dirname(__DIR__, 2) . '/' . $exam['correction_production_path'])) {
+            unlink(dirname(__DIR__, 2) . '/' . $exam['correction_production_path']);
         }
         
         $stmt->close();

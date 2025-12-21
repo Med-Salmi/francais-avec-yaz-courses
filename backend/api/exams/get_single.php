@@ -1,5 +1,6 @@
 <?php
 // /backend/api/exams/get_single.php - Get single exam by ID
+// UPDATED: Now returns 3 file paths instead of 2
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -20,8 +21,19 @@ if ($exam_id <= 0) {
 try {
     $conn = getDBConnection();
     
-    // Fetch exam details
-    $stmt = $conn->prepare("SELECT * FROM exams WHERE id = ?");
+    // Fetch exam details (UPDATED: select new columns)
+    $stmt = $conn->prepare("SELECT 
+                                id, 
+                                title, 
+                                description, 
+                                exam_pdf_path, 
+                                correction_langue_path, 
+                                correction_production_path,
+                                level_slug, 
+                                exam_year, 
+                                created_at,
+                                updated_at 
+                            FROM exams WHERE id = ?");
     $stmt->bind_param("i", $exam_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -32,12 +44,15 @@ try {
     
     $exam = $result->fetch_assoc();
     
-    // Convert file paths to URLs
+    // Convert file paths to URLs (UPDATED: 3 files instead of 2)
     if (!empty($exam['exam_pdf_path'])) {
-        $exam['exam_pdf_url'] = '/' . $exam['exam_pdf_path'];
+        $exam['exam_pdf_url'] = '/' . ltrim($exam['exam_pdf_path'], '/');
     }
-    if (!empty($exam['correction_pdf_path'])) {
-        $exam['correction_pdf_url'] = '/' . $exam['correction_pdf_path'];
+    if (!empty($exam['correction_langue_path'])) {
+        $exam['correction_langue_url'] = '/' . ltrim($exam['correction_langue_path'], '/');
+    }
+    if (!empty($exam['correction_production_path'])) {
+        $exam['correction_production_url'] = '/' . ltrim($exam['correction_production_path'], '/');
     }
     
     $stmt->close();

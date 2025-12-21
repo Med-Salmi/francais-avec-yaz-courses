@@ -1,6 +1,6 @@
 /**
  * manage_exams.js - Manage Exams page JavaScript
- * UPDATED: Now uses real API data
+ * UPDATED: Now shows 3 document types instead of 2
  */
 
 // API URLs
@@ -116,19 +116,26 @@ function displayExams(exams) {
     const date = new Date(exam.created_at);
     const formattedDate = date.toLocaleDateString("fr-FR");
 
-    // Determine status
+    // Determine document status (UPDATED: 3 files instead of 2)
     const hasExam = exam.exam_pdf_path;
-    const hasCorrection = exam.correction_pdf_path;
+    const hasCorrectionLangue = exam.correction_langue_path;
+    const hasCorrectionProduction = exam.correction_production_path;
+
+    // Count available documents
+    const docCount =
+      (hasExam ? 1 : 0) +
+      (hasCorrectionLangue ? 1 : 0) +
+      (hasCorrectionProduction ? 1 : 0);
 
     let status, statusClass;
-    if (hasExam && hasCorrection) {
-      status = "Sujet + Correction";
+    if (docCount === 3) {
+      status = "3 documents";
       statusClass = "status-complete";
-    } else if (hasExam) {
-      status = "Sujet seulement";
+    } else if (docCount === 2) {
+      status = "2 documents";
       statusClass = "status-partial";
-    } else if (hasCorrection) {
-      status = "Correction seulement";
+    } else if (docCount === 1) {
+      status = "1 document";
       statusClass = "status-partial";
     } else {
       status = "Aucun document";
@@ -150,7 +157,13 @@ function displayExams(exams) {
         </td>
         <td>${exam.exam_year || "N/A"}</td>
         <td>
-          <span class="exam-status ${statusClass}">${status}</span>
+          <span class="exam-status ${statusClass}" title="Sujet: ${
+      hasExam ? "✓" : "✗"
+    }, Correction Langue: ${
+      hasCorrectionLangue ? "✓" : "✗"
+    }, Correction Production: ${hasCorrectionProduction ? "✓" : "✗"}">
+            ${status}
+          </span>
         </td>
         <td>${formattedDate}</td>
         <td class="table-actions">

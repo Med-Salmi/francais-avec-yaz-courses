@@ -1,5 +1,6 @@
 <?php
 // /backend/api/exams/update.php - Update exam
+// UPDATED: Now handles 3 files instead of 2
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -40,9 +41,10 @@ $description = isset($_POST['description']) ? sanitizeInput($_POST['description'
 $exam_year = isset($_POST['exam_year']) && !empty($_POST['exam_year']) ? intval($_POST['exam_year']) : null;
 $level_slug = '1ere-annee-bac';
 
-// Check delete flags
+// Check delete flags (UPDATED: 3 flags instead of 2)
 $delete_exam_pdf = isset($_POST['delete_exam_pdf']) && $_POST['delete_exam_pdf'] == '1';
-$delete_correction_pdf = isset($_POST['delete_correction_pdf']) && $_POST['delete_correction_pdf'] == '1';
+$delete_correction_langue_pdf = isset($_POST['delete_correction_langue_pdf']) && $_POST['delete_correction_langue_pdf'] == '1';
+$delete_correction_production_pdf = isset($_POST['delete_correction_production_pdf']) && $_POST['delete_correction_production_pdf'] == '1';
 
 try {
     $conn = getDBConnection();
@@ -60,9 +62,10 @@ try {
     $current_exam = $result->fetch_assoc();
     $stmt->close();
     
-    // Keep current file paths
+    // Keep current file paths (UPDATED: 3 files instead of 2)
     $exam_pdf_path = $current_exam['exam_pdf_path'];
-    $correction_pdf_path = $current_exam['correction_pdf_path'];
+    $correction_langue_path = $current_exam['correction_langue_path'];
+    $correction_production_path = $current_exam['correction_production_path'];
     
     // Function to upload PDF file (same as create.php but with delete handling)
     function uploadPDFFile($file_input, $type, $current_path = null) {
@@ -119,11 +122,11 @@ try {
             throw new Exception("Erreur lors de l'enregistrement du fichier $type: $error_msg");
         }
         
-        // Return relative path for database storage
-        return 'uploads/exams/' . $filename;
+        // Return relative path for database storage - include 'backend/'
+        return 'backend/uploads/exams/' . $filename;
     }
     
-    // Handle file deletions
+    // Handle file deletions (UPDATED: 3 files instead of 2)
     if ($delete_exam_pdf && $exam_pdf_path) {
         if (file_exists(dirname(__DIR__, 2) . '/' . $exam_pdf_path)) {
             unlink(dirname(__DIR__, 2) . '/' . $exam_pdf_path);
@@ -131,11 +134,18 @@ try {
         $exam_pdf_path = null;
     }
     
-    if ($delete_correction_pdf && $correction_pdf_path) {
-        if (file_exists(dirname(__DIR__, 2) . '/' . $correction_pdf_path)) {
-            unlink(dirname(__DIR__, 2) . '/' . $correction_pdf_path);
+    if ($delete_correction_langue_pdf && $correction_langue_path) {
+        if (file_exists(dirname(__DIR__, 2) . '/' . $correction_langue_path)) {
+            unlink(dirname(__DIR__, 2) . '/' . $correction_langue_path);
         }
-        $correction_pdf_path = null;
+        $correction_langue_path = null;
+    }
+    
+    if ($delete_correction_production_pdf && $correction_production_path) {
+        if (file_exists(dirname(__DIR__, 2) . '/' . $correction_production_path)) {
+            unlink(dirname(__DIR__, 2) . '/' . $correction_production_path);
+        }
+        $correction_production_path = null;
     }
     
     // Upload new exam PDF if provided
@@ -143,18 +153,24 @@ try {
         $exam_pdf_path = uploadPDFFile($_FILES['exam_pdf'], 'exam', $exam_pdf_path);
     }
     
-    // Upload new correction PDF if provided
-    if (isset($_FILES['correction_pdf']) && $_FILES['correction_pdf']['error'] != UPLOAD_ERR_NO_FILE) {
-        $correction_pdf_path = uploadPDFFile($_FILES['correction_pdf'], 'correction', $correction_pdf_path);
+    // Upload new correction langue PDF if provided (UPDATED)
+    if (isset($_FILES['correction_langue_pdf']) && $_FILES['correction_langue_pdf']['error'] != UPLOAD_ERR_NO_FILE) {
+        $correction_langue_path = uploadPDFFile($_FILES['correction_langue_pdf'], 'correction_langue', $correction_langue_path);
     }
     
-    // Update exam in database
+    // Upload new correction production PDF if provided (UPDATED)
+    if (isset($_FILES['correction_production_pdf']) && $_FILES['correction_production_pdf']['error'] != UPLOAD_ERR_NO_FILE) {
+        $correction_production_path = uploadPDFFile($_FILES['correction_production_pdf'], 'correction_production', $correction_production_path);
+    }
+    
+    // Update exam in database (UPDATED: 3 files instead of 2)
     $stmt = $conn->prepare("
         UPDATE exams 
         SET title = ?, 
             description = ?, 
             exam_pdf_path = ?, 
-            correction_pdf_path = ?, 
+            correction_langue_path = ?, 
+            correction_production_path = ?,
             level_slug = ?, 
             exam_year = ?, 
             updated_at = CURRENT_TIMESTAMP 
@@ -166,11 +182,12 @@ try {
     }
     
     $stmt->bind_param(
-        "sssssii",
+        "ssssssii",
         $title,
         $description,
         $exam_pdf_path,
-        $correction_pdf_path,
+        $correction_langue_path,
+        $correction_production_path,
         $level_slug,
         $exam_year,
         $exam_id
@@ -187,12 +204,15 @@ try {
     $result = $select_stmt->get_result();
     $updated_exam = $result->fetch_assoc();
     
-    // Convert file paths to URLs
+    // Convert file paths to URLs (UPDATED: 3 files instead of 2)
     if (!empty($updated_exam['exam_pdf_path'])) {
-        $updated_exam['exam_pdf_url'] = '/' . $updated_exam['exam_pdf_path'];
+        $updated_exam['exam_pdf_url'] = '/' . ltrim($updated_exam['exam_pdf_path'], '/');
     }
-    if (!empty($updated_exam['correction_pdf_path'])) {
-        $updated_exam['correction_pdf_url'] = '/' . $updated_exam['correction_pdf_path'];
+    if (!empty($updated_exam['correction_langue_path'])) {
+        $updated_exam['correction_langue_url'] = '/' . ltrim($updated_exam['correction_langue_path'], '/');
+    }
+    if (!empty($updated_exam['correction_production_path'])) {
+        $updated_exam['correction_production_url'] = '/' . ltrim($updated_exam['correction_production_path'], '/');
     }
     
     $stmt->close();

@@ -1,5 +1,6 @@
 <?php
 // edit_exam.php - Edit Exam page
+// UPDATED: Now handles 3 file uploads instead of 2
 session_start();
 
 // Check if user is logged in
@@ -177,17 +178,18 @@ $exam_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
                             </div>
                         </div>
                         
-                        <!-- Current Files -->
+                        <!-- Current Files (UPDATED: 3 files instead of 2) -->
                         <div class="row mt-4">
-                            <div class="col-md-6 mb-4">
+                            <!-- Exam File -->
+                            <div class="col-md-4 mb-4">
                                 <h5 class="mb-3">
-                                    <i class="fas fa-file-pdf me-2"></i>Sujet actuel
+                                    <i class="fas fa-file-pdf text-primary me-2"></i>Sujet actuel
                                 </h5>
                                 <div id="current-exam-file-container">
                                     <!-- Will be populated by JS -->
                                 </div>
                                 
-                                <h6 class="mb-3">
+                                <h6 class="mb-3 mt-3">
                                     <i class="fas fa-upload me-2"></i>Nouveau sujet (optionnel)
                                 </h6>
                                 <div class="file-upload-area" id="exam-upload-area">
@@ -202,24 +204,49 @@ $exam_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
                                 </div>
                             </div>
                             
-                            <div class="col-md-6 mb-4">
+                            <!-- Correction Langue -->
+                            <div class="col-md-4 mb-4">
                                 <h5 class="mb-3">
-                                    <i class="fas fa-check-circle me-2"></i>Correction actuelle
+                                    <i class="fas fa-language text-success me-2"></i>Correction Langue actuelle
                                 </h5>
-                                <div id="current-correction-file-container">
+                                <div id="current-correction-langue-file-container">
                                     <!-- Will be populated by JS -->
                                 </div>
                                 
-                                <h6 class="mb-3">
-                                    <i class="fas fa-upload me-2"></i>Nouvelle correction (optionnel)
+                                <h6 class="mb-3 mt-3">
+                                    <i class="fas fa-upload me-2"></i>Nouvelle correction langue (optionnel)
                                 </h6>
-                                <div class="file-upload-area" id="correction-upload-area">
+                                <div class="file-upload-area" id="correction-langue-upload-area">
                                     <i class="fas fa-cloud-upload-alt"></i>
-                                    <h6>Cliquez pour télécharger une nouvelle correction</h6>
+                                    <h6>Cliquez pour télécharger une nouvelle correction langue</h6>
                                     <p class="text-muted">Remplacera le fichier actuel</p>
-                                    <input type="file" id="correction_pdf" name="correction_pdf" 
+                                    <input type="file" id="correction_langue_pdf" name="correction_langue_pdf" 
                                            accept=".pdf,application/pdf" class="d-none">
-                                    <div id="correction_file_name" class="file-info">
+                                    <div id="correction_langue_file_name" class="file-info">
+                                        Aucun nouveau fichier sélectionné
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Correction Production -->
+                            <div class="col-md-4 mb-4">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-edit text-warning me-2"></i>Correction Production actuelle
+                                </h5>
+                                <div id="current-correction-production-file-container">
+                                    <!-- Will be populated by JS -->
+                                </div>
+                                
+                                <h6 class="mb-3 mt-3">
+                                    <i class="fas fa-upload me-2"></i>Nouvelle correction production (optionnel)
+                                </h6>
+                                <div class="file-upload-area" id="correction-production-upload-area">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <h6>Cliquez pour télécharger une nouvelle correction production</h6>
+                                    <p class="text-muted">Remplacera le fichier actuel</p>
+                                    <input type="file" id="correction_production_pdf" name="correction_production_pdf" 
+                                           accept=".pdf,application/pdf" class="d-none">
+                                    <div id="correction_production_file_name" class="file-info">
                                         Aucun nouveau fichier sélectionné
                                     </div>
                                 </div>

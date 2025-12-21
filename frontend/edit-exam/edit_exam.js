@@ -1,6 +1,6 @@
 /**
  * edit_exam.js - Edit Exam page JavaScript
- * UPDATED: Now uses real API calls
+ * UPDATED: Now handles 3 file uploads instead of 2
  */
 
 // API URLs
@@ -36,22 +36,40 @@ document.addEventListener("DOMContentLoaded", function () {
   const deleteBtn = document.getElementById("delete-btn");
   const examIdElement = document.getElementById("exam-id");
   const examInfoElement = document.getElementById("exam-info");
+
+  // Current file containers (UPDATED: 3 instead of 2)
   const currentExamFileContainer = document.getElementById(
     "current-exam-file-container"
   );
-  const currentCorrectionFileContainer = document.getElementById(
-    "current-correction-file-container"
+  const currentCorrectionLangueFileContainer = document.getElementById(
+    "current-correction-langue-file-container"
+  );
+  const currentCorrectionProductionFileContainer = document.getElementById(
+    "current-correction-production-file-container"
   );
 
-  // File upload elements
+  // File upload elements (UPDATED: 3 instead of 2)
   const examUploadArea = document.getElementById("exam-upload-area");
-  const correctionUploadArea = document.getElementById(
-    "correction-upload-area"
+  const correctionLangueUploadArea = document.getElementById(
+    "correction-langue-upload-area"
+  );
+  const correctionProductionUploadArea = document.getElementById(
+    "correction-production-upload-area"
   );
   const examFileInput = document.getElementById("exam_pdf");
-  const correctionFileInput = document.getElementById("correction_pdf");
+  const correctionLangueFileInput = document.getElementById(
+    "correction_langue_pdf"
+  );
+  const correctionProductionFileInput = document.getElementById(
+    "correction_production_pdf"
+  );
   const examFileName = document.getElementById("exam_file_name");
-  const correctionFileName = document.getElementById("correction_file_name");
+  const correctionLangueFileName = document.getElementById(
+    "correction_langue_file_name"
+  );
+  const correctionProductionFileName = document.getElementById(
+    "correction_production_file_name"
+  );
 
   // Initialize the page
   initPage();
@@ -116,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ${createdDate}
       </li>
       ${
-        exam.updated_at !== exam.created_at
+        exam.updated_at && exam.updated_at !== exam.created_at
           ? `
       <li>
         <strong>Dernière modification:</strong><br>
@@ -127,11 +145,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     `;
 
-    // Display current files
+    // Display current files (UPDATED: 3 files instead of 2)
     displayCurrentFiles(exam);
   }
 
-  // Function to display current files
+  // Function to display current files (UPDATED: 3 files instead of 2)
   function displayCurrentFiles(exam) {
     // Exam file
     if (exam.exam_pdf_path) {
@@ -141,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="current-file">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <i class="fas fa-file-pdf text-danger me-2"></i>
+              <i class="fas fa-file-pdf text-primary me-2"></i>
               <strong>${filename}</strong>
               <br>
               <small>
@@ -168,15 +186,15 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
     }
 
-    // Correction file
-    if (exam.correction_pdf_path) {
-      const filename = exam.correction_pdf_path.split("/").pop();
-      const fileUrl = exam.correction_pdf_url || exam.correction_pdf_path;
-      currentCorrectionFileContainer.innerHTML = `
+    // Correction langue file (UPDATED: new file type)
+    if (exam.correction_langue_path) {
+      const filename = exam.correction_langue_path.split("/").pop();
+      const fileUrl = exam.correction_langue_url || exam.correction_langue_path;
+      currentCorrectionLangueFileContainer.innerHTML = `
         <div class="current-file">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <i class="fas fa-file-pdf text-success me-2"></i>
+              <i class="fas fa-language text-success me-2"></i>
               <strong>${filename}</strong>
               <br>
               <small>
@@ -186,8 +204,8 @@ document.addEventListener("DOMContentLoaded", function () {
               </small>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="delete_correction_pdf" name="delete_correction_pdf" value="1">
-              <label class="form-check-label delete-checkbox" for="delete_correction_pdf">
+              <input class="form-check-input" type="checkbox" id="delete_correction_langue_pdf" name="delete_correction_langue_pdf" value="1">
+              <label class="form-check-label delete-checkbox" for="delete_correction_langue_pdf">
                 Supprimer
               </label>
             </div>
@@ -195,10 +213,46 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
       `;
     } else {
-      currentCorrectionFileContainer.innerHTML = `
+      currentCorrectionLangueFileContainer.innerHTML = `
         <div class="alert alert-info">
           <i class="fas fa-info-circle me-2"></i>
-          Aucune correction n'est actuellement associée à cet examen.
+          Aucune correction langue n'est actuellement associée à cet examen.
+        </div>
+      `;
+    }
+
+    // Correction production file (UPDATED: new file type)
+    if (exam.correction_production_path) {
+      const filename = exam.correction_production_path.split("/").pop();
+      const fileUrl =
+        exam.correction_production_url || exam.correction_production_path;
+      currentCorrectionProductionFileContainer.innerHTML = `
+        <div class="current-file">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <i class="fas fa-edit text-warning me-2"></i>
+              <strong>${filename}</strong>
+              <br>
+              <small>
+                <a href="${fileUrl}" target="_blank" class="text-decoration-none view-file-link">
+                  <i class="fas fa-eye me-1"></i>Voir le fichier
+                </a>
+              </small>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="delete_correction_production_pdf" name="delete_correction_production_pdf" value="1">
+              <label class="form-check-label delete-checkbox" for="delete_correction_production_pdf">
+                Supprimer
+              </label>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      currentCorrectionProductionFileContainer.innerHTML = `
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle me-2"></i>
+          Aucune correction production n'est actuellement associée à cet examen.
         </div>
       `;
     }
@@ -233,13 +287,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Initialize file upload areas
+  // Initialize file upload areas (UPDATED: 3 instead of 2)
   initFileUploadArea(examUploadArea, examFileInput, examFileName, "exam");
   initFileUploadArea(
-    correctionUploadArea,
-    correctionFileInput,
-    correctionFileName,
-    "correction"
+    correctionLangueUploadArea,
+    correctionLangueFileInput,
+    correctionLangueFileName,
+    "correction_langue"
+  );
+  initFileUploadArea(
+    correctionProductionUploadArea,
+    correctionProductionFileInput,
+    correctionProductionFileName,
+    "correction_production"
   );
 
   // Form submission handler
@@ -274,25 +334,44 @@ document.addEventListener("DOMContentLoaded", function () {
           formData.append("exam_year", examYear);
         }
 
-        // Add delete flags
+        // Add delete flags (UPDATED: 3 instead of 2)
         const deleteExamPdf = document.getElementById("delete_exam_pdf");
         if (deleteExamPdf && deleteExamPdf.checked) {
           formData.append("delete_exam_pdf", "1");
         }
 
-        const deleteCorrectionPdf = document.getElementById(
-          "delete_correction_pdf"
+        const deleteCorrectionLanguePdf = document.getElementById(
+          "delete_correction_langue_pdf"
         );
-        if (deleteCorrectionPdf && deleteCorrectionPdf.checked) {
-          formData.append("delete_correction_pdf", "1");
+        if (deleteCorrectionLanguePdf && deleteCorrectionLanguePdf.checked) {
+          formData.append("delete_correction_langue_pdf", "1");
         }
 
-        // Add files if they exist
+        const deleteCorrectionProductionPdf = document.getElementById(
+          "delete_correction_production_pdf"
+        );
+        if (
+          deleteCorrectionProductionPdf &&
+          deleteCorrectionProductionPdf.checked
+        ) {
+          formData.append("delete_correction_production_pdf", "1");
+        }
+
+        // Add files if they exist (UPDATED: 3 instead of 2)
         if (examFileInput.files[0]) {
           formData.append("exam_pdf", examFileInput.files[0]);
         }
-        if (correctionFileInput.files[0]) {
-          formData.append("correction_pdf", correctionFileInput.files[0]);
+        if (correctionLangueFileInput.files[0]) {
+          formData.append(
+            "correction_langue_pdf",
+            correctionLangueFileInput.files[0]
+          );
+        }
+        if (correctionProductionFileInput.files[0]) {
+          formData.append(
+            "correction_production_pdf",
+            correctionProductionFileInput.files[0]
+          );
         }
 
         // Send update request to backend API
@@ -312,13 +391,20 @@ document.addEventListener("DOMContentLoaded", function () {
           // Update displayed data with new values
           displayExamData(result.data.exam);
 
-          // Reset file inputs
+          // Reset file inputs (UPDATED: 3 instead of 2)
           examFileInput.value = "";
-          correctionFileInput.value = "";
+          correctionLangueFileInput.value = "";
+          correctionProductionFileInput.value = "";
           examFileName.innerHTML = "Aucun nouveau fichier sélectionné";
-          correctionFileName.innerHTML = "Aucun nouveau fichier sélectionné";
+          correctionLangueFileName.innerHTML =
+            "Aucun nouveau fichier sélectionné";
+          correctionProductionFileName.innerHTML =
+            "Aucun nouveau fichier sélectionné";
           examUploadArea.classList.remove("file-upload-success");
-          correctionUploadArea.classList.remove("file-upload-success");
+          correctionLangueUploadArea.classList.remove("file-upload-success");
+          correctionProductionUploadArea.classList.remove(
+            "file-upload-success"
+          );
 
           // Reset delete checkboxes
           document
@@ -501,7 +587,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Function to validate form
+  // Function to validate form (UPDATED: 3 files instead of 2)
   function validateForm() {
     let isValid = true;
 
@@ -509,7 +595,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const title = document.getElementById("title").value.trim();
     const examYear = document.getElementById("exam_year").value.trim();
     const examFile = examFileInput.files[0];
-    const correctionFile = correctionFileInput.files[0];
+    const correctionLangueFile = correctionLangueFileInput.files[0];
+    const correctionProductionFile = correctionProductionFileInput.files[0];
 
     // Reset all error states
     hideAllAlerts();
@@ -545,9 +632,17 @@ document.addEventListener("DOMContentLoaded", function () {
       isValid = false;
     }
 
-    if (correctionFile && correctionFile.size > maxSize) {
-      showError("Le fichier correction est trop volumineux (max 10MB).");
-      correctionUploadArea.classList.add("is-invalid");
+    if (correctionLangueFile && correctionLangueFile.size > maxSize) {
+      showError("Le fichier correction langue est trop volumineux (max 10MB).");
+      correctionLangueUploadArea.classList.add("is-invalid");
+      isValid = false;
+    }
+
+    if (correctionProductionFile && correctionProductionFile.size > maxSize) {
+      showError(
+        "Le fichier correction production est trop volumineux (max 10MB)."
+      );
+      correctionProductionUploadArea.classList.add("is-invalid");
       isValid = false;
     }
 
@@ -702,67 +797,4 @@ async function checkAuth() {
     console.error("Auth check failed:", error);
     window.location.href = "/?page=login";
   }
-  // Setup sidebar navigation
-  setupSidebarNavigation();
-
-  // Function to setup sidebar navigation
-  function setupSidebarNavigation() {
-    const navLinks = document.querySelectorAll(".nav-link");
-
-    // Highlight current page
-    highlightCurrentPage();
-
-    // Add click handlers
-    navLinks.forEach((link) => {
-      link.addEventListener("click", function (e) {
-        if (this.classList.contains("text-danger")) {
-          e.preventDefault();
-          logout();
-          return false;
-        }
-      });
-    });
-  }
-
-  // Function to highlight current page
-  function highlightCurrentPage() {
-    const navLinks = document.querySelectorAll(".nav-link");
-    navLinks.forEach((link) => link.classList.remove("active"));
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentPage = urlParams.get("page") || "edit-exam";
-
-    navLinks.forEach((link) => {
-      const href = link.getAttribute("href");
-      if (href && href.includes(`page=${currentPage}`)) {
-        link.classList.add("active");
-      }
-    });
-  }
-
-  // Function to handle logout
-  async function logout() {
-    if (!confirm("Êtes-vous sûr de vouloir vous déconnecter?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch("/backend/api/auth/logout.php", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        window.location.href = "/?page=login";
-      } else {
-        alert("Erreur lors de la déconnexion. Veuillez réessayer.");
-      }
-    } catch (error) {
-      console.error("Logout error:", error);
-      alert("Erreur de connexion. Veuillez réessayer.");
-    }
-  }
-
-  // Make logout function available globally
-  window.logout = logout;
 }
