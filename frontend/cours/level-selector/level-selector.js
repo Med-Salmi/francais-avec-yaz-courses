@@ -1,5 +1,3 @@
-// level-selector Component JavaScript
-
 // Global variable to track current level
 let currentLevel = "tronc-commun"; // Default value
 

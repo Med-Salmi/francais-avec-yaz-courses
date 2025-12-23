@@ -1,7 +1,5 @@
 <?php
-// /backend/api/exams/create.php - Create new exam
-// UPDATED: Now handles 3 file uploads (exam, correction_langue, correction_production)
-// UPDATED: Fixed upload path to include 'backend/'
+// Create new exam
 
 // Turn off error display but log them
 error_reporting(E_ALL);
@@ -27,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     jsonResponse(false, 'Méthode non autorisée', null, 405);
 }
 
-// Check if it's multipart form data (for file uploads)
+// Check if it's multipart form data 
 if (empty($_POST) && empty($_FILES)) {
     // For JSON input (optional)
     $input = json_decode(file_get_contents('php://input'), true);
@@ -55,7 +53,7 @@ $level_slug = '1ere-annee-bac'; // Fixed level
 try {
     $conn = getDBConnection();
     
-    // Handle file uploads (UPDATED: 3 files instead of 2)
+    // Handle file uploads 
     $exam_pdf_path = null;
     $correction_langue_path = null;
     $correction_production_path = null;
@@ -117,7 +115,7 @@ try {
             throw new Exception("Erreur lors de l'enregistrement du fichier $type: $error_msg");
         }
         
-        // Return relative path for database storage - include 'backend/' in path
+        // Return relative path for database storage 
         return 'backend/uploads/exams/' . $filename;
     }
     
@@ -126,12 +124,12 @@ try {
         $exam_pdf_path = uploadPDFFile($_FILES['exam_pdf'], 'exam');
     }
     
-    // Upload correction langue PDF if provided (UPDATED: new field)
+    // Upload correction langue PDF if provided 
     if (isset($_FILES['correction_langue_pdf']) && $_FILES['correction_langue_pdf']['error'] != UPLOAD_ERR_NO_FILE) {
         $correction_langue_path = uploadPDFFile($_FILES['correction_langue_pdf'], 'correction_langue');
     }
     
-    // Upload correction production PDF if provided (UPDATED: new field)
+    // Upload correction production PDF if provided 
     if (isset($_FILES['correction_production_pdf']) && $_FILES['correction_production_pdf']['error'] != UPLOAD_ERR_NO_FILE) {
         $correction_production_path = uploadPDFFile($_FILES['correction_production_pdf'], 'correction_production');
     }
@@ -141,7 +139,7 @@ try {
         jsonResponse(false, 'Veuillez télécharger au moins un fichier PDF (sujet ou correction).');
     }
     
-    // Insert exam into database (UPDATED: new columns)
+    // Insert exam into database 
     $stmt = $conn->prepare("
         INSERT INTO exams (
             title, 
@@ -182,7 +180,7 @@ try {
     $result = $select_stmt->get_result();
     $created_exam = $result->fetch_assoc();
     
-    // Convert file paths to URLs (UPDATED: 3 files instead of 2)
+    // Convert file paths to URLs 
     if (!empty($created_exam['exam_pdf_path'])) {
         $created_exam['exam_pdf_url'] = '/' . ltrim($created_exam['exam_pdf_path'], '/');
     }
@@ -206,7 +204,7 @@ try {
     ]);
     
 } catch (Exception $e) {
-    // Clean up uploaded files if there was an error (UPDATED: 3 files instead of 2)
+    // Clean up uploaded files if there was an error 
     if ($exam_pdf_path && file_exists(dirname(__DIR__, 2) . '/' . $exam_pdf_path)) {
         @unlink(dirname(__DIR__, 2) . '/' . $exam_pdf_path);
     }

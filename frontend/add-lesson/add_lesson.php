@@ -1,7 +1,3 @@
-<?php
-// add_lesson.php - Add Lesson page
-// We'll handle backend authentication and form submission separately later
-?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>

@@ -1,4 +1,3 @@
-<!-- Lesson Item Modal CSS -->
 <style>
 <?php include 'lesson-item.css'; ?>
 </style>
@@ -14,7 +13,6 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Lesson Content Container -->
                 <div id="lessonContentContainer">
                     <!-- Loading state -->
                     <div class="text-center py-5">
@@ -64,7 +62,6 @@
                     </div>
                 </div>
                 
-                <!-- Quiz Section - ALWAYS VISIBLE for frontend testing -->
                 <div id="quizSection" class="quiz-section">
                     <h5>
                         <i class="fas fa-question-circle me-2"></i>Quiz de la Leçon

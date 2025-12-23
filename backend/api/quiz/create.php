@@ -1,6 +1,4 @@
 <?php
-// backend/api/quiz/create.php - STEP 8
-
 // Handle OPTIONS
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     header("Access-Control-Allow-Origin: *");

@@ -1,4 +1,3 @@
-<!-- Categories Component CSS -->
 <style>
 <?php include 'categories.css'; ?>
 </style>

@@ -1,7 +1,4 @@
 <?php
-// edit_lesson.php - Edit Lesson page
-// All data will be loaded via JavaScript from APIs
-
 // Get lesson ID from URL
 $lesson_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -129,7 +126,7 @@ if ($lesson_id <= 0) {
                             </div>
                         </div>
                         
-                        <!-- HTML Content Section (Updated to match add_lesson.php) -->
+                        <!-- HTML Content Section  -->
                         <div class="mb-4">
                             <h5 class="mb-3">
                                 <i class="fas fa-edit me-2"></i>Contenu de la leçon (HTML)

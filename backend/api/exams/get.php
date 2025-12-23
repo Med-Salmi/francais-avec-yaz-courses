@@ -1,5 +1,4 @@
 <?php
-// backend/api/exams/get.php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -9,7 +8,7 @@ require_once '../../includes/config.php';
 $level_slug = isset($_GET['level']) ? $_GET['level'] : '1ere-annee-bac';
 $year = isset($_GET['year']) ? intval($_GET['year']) : null;
 
-// Force 1ere-annee-bac since that's all you have
+// Force 1ere-annee-bac since that's all i have
 $level_slug = '1ere-annee-bac';
 
 try {

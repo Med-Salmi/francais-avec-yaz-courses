@@ -1,7 +1,3 @@
-<?php
-// dashboard.php - Complete dashboard page
-// We'll handle backend authentication separately later
-?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>

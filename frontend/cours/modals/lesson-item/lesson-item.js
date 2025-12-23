@@ -1,4 +1,3 @@
-// Lesson Item Modal Component JavaScript
 document.addEventListener("DOMContentLoaded", function () {
   // Initialize Bootstrap modal
   const lessonModal = new bootstrap.Modal(
@@ -194,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const contentClone = template.cloneNode(true);
     contentClone.style.display = "block";
 
-    // Populate lesson content (NO TITLE - only content section)
+    // Populate lesson content
     // Use the content from database, fallback to placeholder if empty
     const lessonContent =
       lessonData.content && lessonData.content.trim() !== ""

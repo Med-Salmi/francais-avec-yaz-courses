@@ -1,4 +1,4 @@
-/* Ensure CSS variables are defined */
+/* CSS variables  */
 :root {
   --primary-color: #4361ee;
   --secondary-color: #3a0ca3;
@@ -9,8 +9,6 @@
   --success-production: #27ae60; /* Darker green for production */
   --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
-
-/* Rest of your CSS... */
 
 /* Exam Cards */
 .exam-card {

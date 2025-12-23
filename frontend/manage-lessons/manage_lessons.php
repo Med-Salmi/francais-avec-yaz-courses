@@ -1,7 +1,3 @@
-<?php
-// manage_lessons.php - Manage Lessons page
-// We'll handle backend authentication separately later
-?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>

@@ -1,4 +1,3 @@
-// Header Component JavaScript
 document.addEventListener("DOMContentLoaded", function () {
   // Elements
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");

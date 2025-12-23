@@ -1,4 +1,3 @@
-// Lessons List Modal Component JavaScript
 document.addEventListener("DOMContentLoaded", function () {
   // Initialize Bootstrap modal
   const lessonsModalElement = document.getElementById("lessonsModal");

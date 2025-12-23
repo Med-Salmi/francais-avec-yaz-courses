@@ -1,9 +1,3 @@
-/**
- * edit_lesson.js - Edit Lesson page JavaScript
- * REAL implementation with API integration
- * UPDATED: Now includes HTML preview functionality and enhanced validation
- */
-
 // API Base URLs
 const API_BASE_URL = "/backend/api";
 const CATEGORIES_API = `${API_BASE_URL}/categories/all.php`;
@@ -299,7 +293,7 @@ function setupFormSubmission() {
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    // Validate form (UPDATED for HTML content)
+    // Validate form 
     if (!validateForm()) {
       return false;
     }
@@ -436,7 +430,7 @@ function setupEventListeners() {
   // Setup sidebar navigation
   setupSidebarNavigation();
 
-  // Enhanced character counter for HTML content (UPDATED)
+  // Enhanced character counter for HTML content 
   const contentField = document.getElementById("content");
   if (contentField) {
     // Create character counter
@@ -537,7 +531,7 @@ function highlightCurrentPage() {
   });
 }
 
-// Function to validate form (UPDATED for HTML content)
+// Function to validate form 
 function validateForm() {
   let isValid = true;
 
@@ -573,7 +567,7 @@ function validateForm() {
     isValid = false;
   }
 
-  // Validate content (text without HTML tags should be at least 50 chars) - UPDATED
+  // Validate content (text without HTML tags should be at least 50 chars) 
   if (!content) {
     showError("Le contenu est obligatoire");
     document.getElementById("content").classList.add("is-invalid");
@@ -609,7 +603,7 @@ function validateForm() {
   return isValid;
 }
 
-// Helper function to check for unbalanced HTML tags (warning only) - NEW
+// Helper function to check for unbalanced HTML tags (warning only)
 function checkUnbalancedHTMLTags(html) {
   const tagRegex = /<\/?([a-z][a-z0-9]*)[^>]*>/gi;
   const tags = html.match(tagRegex) || [];

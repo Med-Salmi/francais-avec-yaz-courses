@@ -1,7 +1,4 @@
 <?php
-// backend/api/auth/config.php
-// Admin credentials (store securely, not in git in production)
-
 // Simple single admin account
 define('ADMIN_USERNAME', 'admin');
 define('ADMIN_PASSWORD_HASH', '$2y$10$xSyNXbUByRtkZ09WUwT8E.OJ2LVGqeC5NoB9YbaTrx5YgjJYevPOC');

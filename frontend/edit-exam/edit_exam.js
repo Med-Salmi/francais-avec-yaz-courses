@@ -1,8 +1,3 @@
-/**
- * edit_exam.js - Edit Exam page JavaScript
- * UPDATED: Now handles 3 file uploads instead of 2
- */
-
 // API URLs
 const GET_EXAM_API = "/backend/api/exams/get_single.php";
 const UPDATE_EXAM_API = "/backend/api/exams/update.php";
@@ -37,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const examIdElement = document.getElementById("exam-id");
   const examInfoElement = document.getElementById("exam-info");
 
-  // Current file containers (UPDATED: 3 instead of 2)
+  // Current file containers 
   const currentExamFileContainer = document.getElementById(
     "current-exam-file-container"
   );
@@ -48,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "current-correction-production-file-container"
   );
 
-  // File upload elements (UPDATED: 3 instead of 2)
+  // File upload elements 
   const examUploadArea = document.getElementById("exam-upload-area");
   const correctionLangueUploadArea = document.getElementById(
     "correction-langue-upload-area"
@@ -145,11 +140,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     `;
 
-    // Display current files (UPDATED: 3 files instead of 2)
+    // Display current files 
     displayCurrentFiles(exam);
   }
 
-  // Function to display current files (UPDATED: 3 files instead of 2)
+  // Function to display current files 
   function displayCurrentFiles(exam) {
     // Exam file
     if (exam.exam_pdf_path) {
@@ -186,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
     }
 
-    // Correction langue file (UPDATED: new file type)
+    // Correction langue file 
     if (exam.correction_langue_path) {
       const filename = exam.correction_langue_path.split("/").pop();
       const fileUrl = exam.correction_langue_url || exam.correction_langue_path;
@@ -221,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
     }
 
-    // Correction production file (UPDATED: new file type)
+    // Correction production file 
     if (exam.correction_production_path) {
       const filename = exam.correction_production_path.split("/").pop();
       const fileUrl =
@@ -287,7 +282,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Initialize file upload areas (UPDATED: 3 instead of 2)
+  // Initialize file upload areas
   initFileUploadArea(examUploadArea, examFileInput, examFileName, "exam");
   initFileUploadArea(
     correctionLangueUploadArea,
@@ -334,7 +329,7 @@ document.addEventListener("DOMContentLoaded", function () {
           formData.append("exam_year", examYear);
         }
 
-        // Add delete flags (UPDATED: 3 instead of 2)
+        // Add delete flags
         const deleteExamPdf = document.getElementById("delete_exam_pdf");
         if (deleteExamPdf && deleteExamPdf.checked) {
           formData.append("delete_exam_pdf", "1");
@@ -357,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
           formData.append("delete_correction_production_pdf", "1");
         }
 
-        // Add files if they exist (UPDATED: 3 instead of 2)
+        // Add files if they exist 
         if (examFileInput.files[0]) {
           formData.append("exam_pdf", examFileInput.files[0]);
         }
@@ -391,7 +386,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // Update displayed data with new values
           displayExamData(result.data.exam);
 
-          // Reset file inputs (UPDATED: 3 instead of 2)
+          // Reset file inputs 
           examFileInput.value = "";
           correctionLangueFileInput.value = "";
           correctionProductionFileInput.value = "";
@@ -587,7 +582,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Function to validate form (UPDATED: 3 files instead of 2)
+  // Function to validate form 
   function validateForm() {
     let isValid = true;
 

@@ -1,5 +1,5 @@
 <?php
-// backend/api/lessons/create.php - Create new lesson
+// Create new lesson
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");

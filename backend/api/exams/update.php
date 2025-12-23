@@ -1,6 +1,5 @@
 <?php
-// /backend/api/exams/update.php - Update exam
-// UPDATED: Now handles 3 files instead of 2
+// Update exam
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -41,7 +40,7 @@ $description = isset($_POST['description']) ? sanitizeInput($_POST['description'
 $exam_year = isset($_POST['exam_year']) && !empty($_POST['exam_year']) ? intval($_POST['exam_year']) : null;
 $level_slug = '1ere-annee-bac';
 
-// Check delete flags (UPDATED: 3 flags instead of 2)
+// Check delete flags 
 $delete_exam_pdf = isset($_POST['delete_exam_pdf']) && $_POST['delete_exam_pdf'] == '1';
 $delete_correction_langue_pdf = isset($_POST['delete_correction_langue_pdf']) && $_POST['delete_correction_langue_pdf'] == '1';
 $delete_correction_production_pdf = isset($_POST['delete_correction_production_pdf']) && $_POST['delete_correction_production_pdf'] == '1';
@@ -62,7 +61,7 @@ try {
     $current_exam = $result->fetch_assoc();
     $stmt->close();
     
-    // Keep current file paths (UPDATED: 3 files instead of 2)
+    // Keep current file paths 
     $exam_pdf_path = $current_exam['exam_pdf_path'];
     $correction_langue_path = $current_exam['correction_langue_path'];
     $correction_production_path = $current_exam['correction_production_path'];
@@ -122,11 +121,11 @@ try {
             throw new Exception("Erreur lors de l'enregistrement du fichier $type: $error_msg");
         }
         
-        // Return relative path for database storage - include 'backend/'
+        // Return relative path for database storage 
         return 'backend/uploads/exams/' . $filename;
     }
     
-    // Handle file deletions (UPDATED: 3 files instead of 2)
+    // Handle file deletions
     if ($delete_exam_pdf && $exam_pdf_path) {
         if (file_exists(dirname(__DIR__, 2) . '/' . $exam_pdf_path)) {
             unlink(dirname(__DIR__, 2) . '/' . $exam_pdf_path);
@@ -153,17 +152,17 @@ try {
         $exam_pdf_path = uploadPDFFile($_FILES['exam_pdf'], 'exam', $exam_pdf_path);
     }
     
-    // Upload new correction langue PDF if provided (UPDATED)
+    // Upload new correction langue PDF if provided
     if (isset($_FILES['correction_langue_pdf']) && $_FILES['correction_langue_pdf']['error'] != UPLOAD_ERR_NO_FILE) {
         $correction_langue_path = uploadPDFFile($_FILES['correction_langue_pdf'], 'correction_langue', $correction_langue_path);
     }
     
-    // Upload new correction production PDF if provided (UPDATED)
+    // Upload new correction production PDF if provided 
     if (isset($_FILES['correction_production_pdf']) && $_FILES['correction_production_pdf']['error'] != UPLOAD_ERR_NO_FILE) {
         $correction_production_path = uploadPDFFile($_FILES['correction_production_pdf'], 'correction_production', $correction_production_path);
     }
     
-    // Update exam in database (UPDATED: 3 files instead of 2)
+    // Update exam in database 
     $stmt = $conn->prepare("
         UPDATE exams 
         SET title = ?, 
@@ -204,7 +203,7 @@ try {
     $result = $select_stmt->get_result();
     $updated_exam = $result->fetch_assoc();
     
-    // Convert file paths to URLs (UPDATED: 3 files instead of 2)
+    // Convert file paths to URLs 
     if (!empty($updated_exam['exam_pdf_path'])) {
         $updated_exam['exam_pdf_url'] = '/' . ltrim($updated_exam['exam_pdf_path'], '/');
     }

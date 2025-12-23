@@ -1,8 +1,3 @@
-/**
- * manage_exams.js - Manage Exams page JavaScript
- * UPDATED: Now shows 3 document types instead of 2
- */
-
 // API URLs
 const EXAMS_API = "/backend/api/exams/list.php";
 const DELETE_EXAM_API = "/backend/api/exams/delete.php";
@@ -116,7 +111,7 @@ function displayExams(exams) {
     const date = new Date(exam.created_at);
     const formattedDate = date.toLocaleDateString("fr-FR");
 
-    // Determine document status (UPDATED: 3 files instead of 2)
+    // Determine document status 
     const hasExam = exam.exam_pdf_path;
     const hasCorrectionLangue = exam.correction_langue_path;
     const hasCorrectionProduction = exam.correction_production_path;

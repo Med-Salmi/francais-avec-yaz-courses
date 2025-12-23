@@ -1,5 +1,3 @@
-/* add_exam.css - Add Exam page styles */
-
 /* Body styling */
 body {
   background-color: #f5f7fb;
@@ -424,8 +422,6 @@ textarea.form-control {
   }
 }
 
-/* Add these to your existing add_exam.css file */
-
 /* Input group styling for year field */
 .input-group {
   border-radius: 8px;
@@ -446,6 +442,7 @@ textarea.form-control {
 
 /* Number input specific styling */
 input[type="number"] {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 

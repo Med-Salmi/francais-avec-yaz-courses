@@ -1,11 +1,10 @@
 <?php
-// backend/api/categories/get.php
 // CORS headers
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
-// Include the config file (note the path - we're 2 levels deep)
+// Include the config file 
 require_once '../../includes/config.php';
 
 // Get the level from query parameter

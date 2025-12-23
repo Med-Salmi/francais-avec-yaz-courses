@@ -1,4 +1,3 @@
-<!-- Footer Component CSS -->
 <style>
 <?php include 'footer.css'; ?>
 </style>

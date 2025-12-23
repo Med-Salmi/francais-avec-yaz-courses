@@ -1,11 +1,10 @@
 <?php
-// backend/api/lessons/list.php
 // CORS headers
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
-// Include the config file - CORRECT PATH for your structure
+// Include the config file 
 require_once '../../includes/config.php';
 
 // Check admin authentication for this endpoint
@@ -14,7 +13,7 @@ requireAdminAuth();
 try {
     $conn = getDBConnection();
     
-    // Fetch lessons with category names - EXACT SAME QUERY as old monolithic code
+    // Fetch lessons with category names 
     $sql = "SELECT l.*, c.name as category_name 
             FROM lecons l 
             JOIN categories c ON l.category_id = c.id 

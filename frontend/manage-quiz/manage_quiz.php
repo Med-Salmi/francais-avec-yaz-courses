@@ -1,5 +1,4 @@
 <?php
-// manage_quiz.php - Manage Quiz component
 // Get lesson ID from URL
 $lesson_id = isset($_GET['lesson_id']) ? intval($_GET['lesson_id']) : 0;
 

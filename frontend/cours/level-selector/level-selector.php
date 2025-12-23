@@ -1,10 +1,9 @@
-<!-- Level Selector Component CSS -->
 <style>
 <?php include 'level-selector.css'; ?>
 </style>
 
 <!-- Level Selector Section -->
-<div class="container">  <!-- ← ADD CONTAINER HERE -->
+<div class="container">  
     <section class="level-selector text-center">
         <h2 class="mb-4">Choisissez votre niveau</h2>
         <div class="d-flex flex-wrap justify-content-center">
@@ -16,7 +15,7 @@
             </button>
         </div>
     </section>
-</div>  <!-- ← CLOSE CONTAINER -->
+</div> 
 
 <!-- Level Selector Component JavaScript -->
 <script>

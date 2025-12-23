@@ -1,5 +1,4 @@
 <?php
-// add_exam.php - Add Exam page
 session_start();
 
 // Check if user is logged in

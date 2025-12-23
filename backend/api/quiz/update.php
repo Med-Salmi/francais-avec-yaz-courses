@@ -1,6 +1,5 @@
 <?php
-// backend/api/quiz/update.php - Update quiz question
-
+// Update quiz question
 // Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     header("Access-Control-Allow-Origin: *");

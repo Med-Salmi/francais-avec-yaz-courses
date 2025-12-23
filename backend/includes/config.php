@@ -1,11 +1,9 @@
 <?php
-// backend/includes/config.php
-
 // Database configuration
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'french_teacher_db');
 define('DB_USER', 'root');
-define('DB_PASS', 'YourPassword123!'); // Your actual MySQL password
+define('DB_PASS', 'YourPassword123!'); 
 
 // Upload directories - use absolute paths
 $base_dir = dirname(__DIR__); // Goes up from includes/ to backend/
@@ -19,7 +17,7 @@ define('ALLOWED_FILE_TYPES', ['application/pdf']);
 
 // Error reporting
 error_reporting(E_ALL);
-ini_set('display_errors', 0); // Don't display errors to users
+ini_set('display_errors', 0); 
 ini_set('log_errors', 1);
 ini_set('error_log', dirname(__DIR__) . '/php_errors.log');
 
@@ -78,7 +76,7 @@ function jsonResponse($success, $message = '', $data = null, $httpCode = 200) {
     exit;
 }
 
-// Check if user is logged in (for admin API endpoints)
+// Check if user is logged in 
 function requireAdminAuth() {
     session_start();
     

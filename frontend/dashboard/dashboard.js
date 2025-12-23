@@ -1,7 +1,3 @@
-/**
- * dashboard.js - Dashboard component JavaScript with real data
- */
-
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Dashboard component loaded");
@@ -151,7 +147,7 @@ async function logout() {
   }
 }
 
-// Function to update welcome message (will be used when auth is implemented)
+// Function to update welcome message 
 function updateWelcomeMessage(username) {
   const welcomeElement = document.querySelector(".sidebar-header .text-muted");
   if (welcomeElement && username) {

@@ -1,6 +1,6 @@
 <?php
-// /backend/api/exams/get_single.php - Get single exam by ID
-// UPDATED: Now returns 3 file paths instead of 2
+// Get single exam by ID
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -21,7 +21,7 @@ if ($exam_id <= 0) {
 try {
     $conn = getDBConnection();
     
-    // Fetch exam details (UPDATED: select new columns)
+    // Fetch exam details 
     $stmt = $conn->prepare("SELECT 
                                 id, 
                                 title, 
@@ -44,7 +44,7 @@ try {
     
     $exam = $result->fetch_assoc();
     
-    // Convert file paths to URLs (UPDATED: 3 files instead of 2)
+    // Convert file paths to URLs 
     if (!empty($exam['exam_pdf_path'])) {
         $exam['exam_pdf_url'] = '/' . ltrim($exam['exam_pdf_path'], '/');
     }

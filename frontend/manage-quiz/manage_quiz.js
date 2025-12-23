@@ -1,7 +1,3 @@
-/**
- * manage_quiz.js - Manage Quiz page JavaScript
- */
-
 // API Base URLs
 const API_BASE_URL = "/backend/api";
 const LESSONS_API = `${API_BASE_URL}/lessons/get_single.php`;

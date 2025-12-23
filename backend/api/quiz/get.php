@@ -1,6 +1,4 @@
 <?php
-// backend/api/quiz/get.php - FINAL WORKING VERSION
-
 // Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     header("Access-Control-Allow-Origin: *");

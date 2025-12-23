@@ -1,10 +1,3 @@
-<?php
-// login.php - Complete login page
-// Note: We'll handle backend logic separately later
-$error = ""; // Will be set by backend
-?>
-
-<!-- Login page CSS -->
 <style>
 <?php include 'login.css'; ?>
 </style>

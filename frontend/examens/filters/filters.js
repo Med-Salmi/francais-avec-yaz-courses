@@ -1,7 +1,3 @@
-/**
- * Filters Component JavaScript
- */
-
 // Global variables
 let currentYear = null;
 let availableYears = []; // Will be populated from API

@@ -1,4 +1,3 @@
-<!-- Lessons List Modal CSS -->
 <style>
 <?php include 'lessons-list.css'; ?>
 </style>
@@ -16,7 +15,7 @@
                     <!-- Lessons will be loaded here dynamically -->
                 </div>
                 
-                <!-- SIMPLIFIED Lesson Item Template (hidden) -->
+                <!-- Lesson Item Template (hidden) -->
                 <div class="col-md-6 col-lg-4 mb-3 lesson-item-template" style="display: none;">
                     <div class="card lesson-card h-100">
                         <div class="card-body">

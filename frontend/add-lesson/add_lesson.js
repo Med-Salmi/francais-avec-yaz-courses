@@ -1,8 +1,3 @@
-/**
- * add_lesson.js - Add Lesson page JavaScript
- * UPDATED: Now includes HTML preview functionality
- */
-
 // API Base URLs
 const API_BASE_URL = "/backend/api";
 const CATEGORIES_API = `${API_BASE_URL}/categories/all.php`;

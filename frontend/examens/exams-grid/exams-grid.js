@@ -1,6 +1,3 @@
-/**
- * Exams Grid Component JavaScript
- */
 document.addEventListener("DOMContentLoaded", function () {
   // Listen for year filter changes
   document.addEventListener("yearFilterChanged", function (e) {

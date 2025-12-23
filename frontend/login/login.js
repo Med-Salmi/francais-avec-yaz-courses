@@ -1,7 +1,3 @@
-/**
- * login.js - Login page JavaScript with real backend authentication
- */
-
 document.addEventListener("DOMContentLoaded", function () {
   // RESET FORM STATE ON PAGE LOAD
   resetLoginForm();

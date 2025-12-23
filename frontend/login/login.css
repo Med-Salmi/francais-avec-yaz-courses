@@ -1,6 +1,3 @@
-/* login.css - Login page styles */
-
-/* IMPORTANT: Make these styles more specific to override Bootstrap */
 html body {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   min-height: 100vh !important; /* Changed back to min-height */
@@ -19,7 +16,7 @@ main {
 /* Let Bootstrap handle the container/row/col system */
 /* Remove all our custom overrides for container, row, and col */
 
-/* Login card - EXACT match from original */
+/* Login card */
 .login-card {
   background: white;
   border-radius: 15px;
@@ -58,13 +55,11 @@ main {
   padding: 12px;
   font-weight: 600;
   width: 100%;
-  /* Original had no transition/hover effects */
 }
 
 .btn-login:hover {
   background: linear-gradient(135deg, #3a0ca3, #4361ee);
   color: white;
-  /* Original had no transform/box-shadow */
 }
 
 .back-home-link {
@@ -79,12 +74,6 @@ main {
   opacity: 0.8;
   color: white;
 }
-
-/* Original didn't have custom focus states */
-/* .form-control:focus {
-    border-color: #4361ee;
-    box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
-} */
 
 .alert {
   border-radius: 8px;

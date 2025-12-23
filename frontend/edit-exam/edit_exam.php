@@ -1,6 +1,4 @@
 <?php
-// edit_exam.php - Edit Exam page
-// UPDATED: Now handles 3 file uploads instead of 2
 session_start();
 
 // Check if user is logged in
@@ -178,7 +176,7 @@ $exam_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
                             </div>
                         </div>
                         
-                        <!-- Current Files (UPDATED: 3 files instead of 2) -->
+                        <!-- Current Files  -->
                         <div class="row mt-4">
                             <!-- Exam File -->
                             <div class="col-md-4 mb-4">

@@ -1,5 +1,5 @@
 <?php
-// backend/api/lessons/update.php - Update existing lesson
+// Update existing lesson
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -15,7 +15,7 @@ if (!in_array($_SERVER['REQUEST_METHOD'], ['PUT', 'POST'])) {
     jsonResponse(false, 'Method not allowed', null, 405);
 }
 
-// Define allowed HTML tags for lesson content (ADDED from create.php)
+// Define allowed HTML tags for lesson content 
 define('ALLOWED_HTML_TAGS', '<h1><h2><h3><h4><h5><h6><p><div><span><strong><b><em><i><u><s><strike><sub><sup>');
 define('ALLOWED_LIST_TAGS', '<ul><ol><li>');
 define('ALLOWED_MEDIA_TAGS', '<a><img><iframe><video><audio><source><track>');
@@ -27,7 +27,7 @@ define('ALLOWED_OTHER_TAGS', '<br><hr><blockquote>');
 $ALL_TAGS = ALLOWED_HTML_TAGS . ALLOWED_LIST_TAGS . ALLOWED_MEDIA_TAGS . 
             ALLOWED_CODE_TAGS . ALLOWED_TABLE_TAGS . ALLOWED_OTHER_TAGS;
 
-// Function to safely sanitize HTML content (preserves formatting, prevents XSS) - ADDED from create.php
+// Function to safely sanitize HTML content (preserves formatting, prevents XSS) 
 function sanitizeLessonContent($content) {
     global $ALL_TAGS;
     
@@ -166,7 +166,7 @@ if (strlen($title) < 5) {
     jsonResponse(false, 'Le titre doit contenir au moins 5 caractères');
 }
 
-// Check content length without HTML tags (UPDATED from create.php)
+// Check content length without HTML tags 
 $content_text_only = strip_tags($content);
 if (strlen($content_text_only) < 50) {
     jsonResponse(false, 'Le contenu doit contenir au moins 50 caractères de texte (sans les balises HTML)');

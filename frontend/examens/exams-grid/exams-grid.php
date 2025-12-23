@@ -1,4 +1,3 @@
-<!-- Exams Grid Component CSS -->
 <style>
 <?php include 'exams-grid.css'; ?>
 </style>

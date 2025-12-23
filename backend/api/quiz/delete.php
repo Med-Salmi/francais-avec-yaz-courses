@@ -1,6 +1,5 @@
 <?php
-// backend/api/quiz/delete.php - Delete quiz question
-
+// Delete quiz question
 // Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     header("Access-Control-Allow-Origin: *");

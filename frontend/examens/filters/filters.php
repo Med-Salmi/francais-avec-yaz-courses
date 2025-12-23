@@ -1,10 +1,9 @@
-<!-- Filters Component CSS -->
 <style>
 <?php include 'filters.css'; ?>
 </style>
 
 <!-- Filters Section -->
-<div class="container">  <!-- ← ADD CONTAINER HERE -->
+<div class="container"> 
     <section class="filters-card">
         <h5 class="mb-3">
             <i class="fas fa-filter me-2"></i>Filtrer par année
@@ -26,7 +25,7 @@
             </button>
         </div>
     </section>
-</div>  <!-- ← CLOSE CONTAINER -->
+</div>  
 
 <!-- Filters Component JavaScript -->
 <script>

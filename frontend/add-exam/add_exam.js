@@ -1,8 +1,3 @@
-/**
- * add_exam.js - Add Exam page JavaScript
- * UPDATED: Now handles 3 file uploads (exam, correction_langue, correction_production)
- */
-
 // Wait for DOM to be fully loaded
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Add Exam page loaded");
@@ -19,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const resetBtn = document.getElementById("reset-btn");
   const submitBtn = document.getElementById("submit-btn");
 
-  // File upload elements (UPDATED: 3 instead of 2)
+  // File upload elements 
   const examUploadArea = document.getElementById("exam-upload-area");
   const correctionLangueUploadArea = document.getElementById(
     "correction-langue-upload-area"
@@ -42,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "correction_production_file_name"
   );
 
-  // Initialize file upload areas (UPDATED: 3 instead of 2)
+  // Initialize file upload areas
   initFileUploadArea(examUploadArea, examFileInput, examFileName, "exam");
   initFileUploadArea(
     correctionLangueUploadArea,
@@ -67,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return false;
       }
 
-      // Check if user wants to proceed without files (UPDATED: 3 files)
+      // Check if user wants to proceed without files 
       const examFile = examFileInput.files[0];
       const correctionLangueFile = correctionLangueFileInput.files[0];
       const correctionProductionFile = correctionProductionFileInput.files[0];
@@ -103,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
           formData.append("exam_year", examYear);
         }
 
-        // Add files if they exist (UPDATED: 3 files instead of 2)
+        // Add files if they exist 
         if (examFile) {
           formData.append("exam_pdf", examFile);
         }
@@ -267,7 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Function to reset file displays (UPDATED: 3 instead of 2)
+  // Function to reset file displays 
   function resetFileDisplays() {
     examFileName.innerHTML = "Aucun fichier sélectionné";
     correctionLangueFileName.innerHTML = "Aucun fichier sélectionné";
@@ -277,7 +272,7 @@ document.addEventListener("DOMContentLoaded", function () {
     correctionProductionUploadArea.classList.remove("file-upload-success");
   }
 
-  // Function to validate form (UPDATED: 3 files instead of 2)
+  // Function to validate form 
   function validateForm() {
     let isValid = true;
 
@@ -315,7 +310,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    // Validate files (UPDATED: 3 files instead of 2)
+    // Validate files 
     const maxSize = 10 * 1024 * 1024; // 10MB
 
     if (examFile && examFile.size > maxSize) {
@@ -422,7 +417,7 @@ document.addEventListener("DOMContentLoaded", function () {
     descriptionField.dispatchEvent(new Event("input"));
   }
 
-  // Add visual feedback for drag over (UPDATED: 3 areas instead of 2)
+  // Add visual feedback for drag over 
   const uploadAreas = [
     examUploadArea,
     correctionLangueUploadArea,

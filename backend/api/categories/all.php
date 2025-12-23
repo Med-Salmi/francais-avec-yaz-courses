@@ -1,5 +1,5 @@
 <?php
-// backend/api/categories/all.php - Get ALL categories grouped by level
+// Get ALL categories grouped by level
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");

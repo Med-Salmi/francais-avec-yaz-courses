@@ -1,6 +1,3 @@
-/**
- * Categories Component JavaScript
- */
 document.addEventListener("DOMContentLoaded", function () {
   // Listen for level changes from level selector
   document.addEventListener("levelChanged", function (e) {
@@ -68,9 +65,6 @@ async function loadCategoriesForLevel(level) {
 
 // Helper function to extract categories from API response
 function extractCategoriesFromApi(apiData, levelSlug) {
-  console.log("Extracting from API data:", apiData); // Debug log
-  console.log("Looking for level:", levelSlug); // Debug log
-
   // Case 1: API returns an array of categories directly
   if (Array.isArray(apiData) && apiData.length > 0 && apiData[0].id) {
     // Filter by level if level information is in categories
@@ -188,7 +182,6 @@ function getCategoriesByLevel(level) {
 
 // Function to display categories
 function displayCategories(categories, level) {
-  console.log("Displaying categories:", categories); // Debug log
   const container = document.getElementById("categories-container");
 
   if (!categories || categories.length === 0) {

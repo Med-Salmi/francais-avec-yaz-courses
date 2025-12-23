@@ -1,5 +1,4 @@
 <?php
-// backend/api/lessons/get_single.php
 // CORS headers
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");

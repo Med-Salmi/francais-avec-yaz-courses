@@ -1,8 +1,3 @@
-/**
- * manage-lessons.js - Manage Lessons page JavaScript
- * UPDATED: Now uses real API data with authentication
- */
-
 // API Base URL
 const API_BASE_URL = "/backend/api/lessons";
 

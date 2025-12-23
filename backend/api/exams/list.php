@@ -1,5 +1,5 @@
 <?php
-// backend/api/exams/list.php - Get all exams for admin
+// Get all exams for admin
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -12,7 +12,7 @@ requireAdminAuth();
 try {
     $conn = getDBConnection();
     
-    // Get all exams for 1ere-annee-bac (admin view) - UPDATED: select specific columns
+    // Get all exams for 1ere-annee-bac (admin view) 
     $sql = "SELECT 
                 id, 
                 title, 

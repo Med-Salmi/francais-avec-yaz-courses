@@ -1,4 +1,3 @@
-<!-- About Component CSS -->
 <style>
 <?php include 'about.css'; ?>
 </style>

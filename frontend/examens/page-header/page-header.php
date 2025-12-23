@@ -1,10 +1,9 @@
-<!-- Page Header Component CSS -->
 <style>
 <?php include 'page-header.css'; ?>
 </style>
 
 <!-- Page Header Section -->
-<div class="container">  <!-- ← ADD CONTAINER HERE -->
+<div class="container">  
 <section class="page-header">
         <h1><i class="fas fa-file-alt me-3"></i>Examens de Français</h1>
         <p>
@@ -17,7 +16,7 @@
             </span>
         </div>
     </section>
-</div>  <!-- ← CLOSE CONTAINER -->
+</div>  
 
 <!-- Page Header Component JavaScript -->
 <script>
