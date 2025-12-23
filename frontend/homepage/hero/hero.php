@@ -15,10 +15,10 @@
                     interactifs et des ressources d'examen.
                 </p>
                 <div class="mt-4">
-                    <a href="cours.php" class="btn btn-hero btn-hero-primary">
+                    <a href="/?page=cours" class="btn btn-hero btn-hero-primary">
                         <i class="fas fa-book-open me-2"></i>Explorer les Cours
                     </a>
-                    <a href="examens.php" class="btn btn-hero btn-hero-secondary">
+                    <a href="/?page=examens" class="btn btn-hero btn-hero-secondary">
                         <i class="fas fa-file-alt me-2"></i>Voir les Examens
                     </a>
                 </div>

@@ -6,8 +6,9 @@
 <!-- Footer Section -->
 <footer class="footer">
     <div class="container">
-        <div class="row">
-            <div class="col-md-4 mb-4">
+        <div class="row justify-content-center">
+            <!-- First Column -->
+            <div class="col-md-5 col-lg-4 mb-4 text-center text-md-start">
                 <h5>Français Avec Yaz</h5>
                 <p>
                     Plateforme éducative dédiée à l'enseignement de la langue
@@ -16,43 +17,26 @@
                 <p><i class="fas fa-envelope me-2"></i>yzaghlamane2@gmail.com</p>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <!-- Spacer Column for Centering (Optional, can adjust sizing) -->
+            <div class="col-md-2 d-none d-md-block"></div>
+
+            <!-- Second Column -->
+            <div class="col-md-5 col-lg-4 mb-4 text-center text-md-start">
                 <h5>Liens Rapides</h5>
                 <ul class="footer-links">
                     <li>
-                        <a href="index.php">
+                        <a href="/?page=homepage">
                             <i class="fas fa-chevron-right me-2"></i>Accueil
                         </a>
                     </li>
                    <li>
-                        <a href="index.php?page=cours">
+                        <a href="/?page=cours">
                             <i class="fas fa-chevron-right me-2"></i>Cours
                         </a>
                     </li>
                     <li>
-                        <a href="index.php?page=examens">
+                        <a href="/?page=examens">
                             <i class="fas fa-chevron-right me-2"></i>Examens
-                        </a>
-                    </li>
-                    <li>
-                        <a href="admin/login.php">
-                            <i class="fas fa-chevron-right me-2"></i>Espace Admin
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="col-md-4 mb-4">
-                <h5>Niveaux</h5>
-                <ul class="footer-links">
-                    <li>
-                        <a href="cours.php?level=tronc-commun">
-                            <i class="fas fa-book-reader me-2"></i>Tronc Commun
-                        </a>
-                    </li>
-                    <li>
-                        <a href="cours.php?level=1ere-annee-bac">
-                            <i class="fas fa-university me-2"></i>1ère Année Bac
                         </a>
                     </li>
                 </ul>

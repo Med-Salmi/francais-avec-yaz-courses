@@ -780,7 +780,70 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+  // Setup sidebar navigation
+  setupSidebarNavigation();
 });
+
+// Function to setup sidebar navigation
+function setupSidebarNavigation() {
+  const navLinks = document.querySelectorAll(".nav-link");
+
+  // Highlight current page
+  highlightCurrentPage();
+
+  // Add click handlers
+  navLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      if (this.classList.contains("text-danger")) {
+        e.preventDefault();
+        logout();
+        return false;
+      }
+    });
+  });
+}
+
+// Function to highlight current page
+function highlightCurrentPage() {
+  const navLinks = document.querySelectorAll(".nav-link");
+  navLinks.forEach((link) => link.classList.remove("active"));
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentPage = urlParams.get("page") || "edit-exam";
+
+  navLinks.forEach((link) => {
+    const href = link.getAttribute("href");
+    if (href && href.includes(`page=${currentPage}`)) {
+      link.classList.add("active");
+    }
+  });
+}
+
+// Function to handle logout
+async function logout() {
+  if (!confirm("Êtes-vous sûr de vouloir vous déconnecter?")) {
+    return;
+  }
+
+  try {
+    const response = await fetch("/backend/api/auth/logout.php", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      window.location.href = "/?page=login";
+    } else {
+      alert("Erreur lors de la déconnexion. Veuillez réessayer.");
+    }
+  } catch (error) {
+    console.error("Logout error:", error);
+    alert("Erreur de connexion. Veuillez réessayer.");
+  }
+}
+
+// Make logout function available globally
+window.logout = logout;
 
 // Function to check authentication
 async function checkAuth() {

@@ -129,14 +129,105 @@ if ($lesson_id <= 0) {
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="content" class="form-label">
-                                <i class="fas fa-align-left me-2"></i>Contenu de la leçon <span class="text-danger">*</span>
-                            </label>
-                            <textarea class="form-control" id="content" name="content" rows="8" 
-                                      placeholder="Écrivez le contenu de la leçon ici..." required></textarea>
-                            <div class="form-text">
-                                Utilisez des sauts de ligne pour les paragraphes. Le texte sera affiché tel quel.
+                        <!-- HTML Content Section (Updated to match add_lesson.php) -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">
+                                <i class="fas fa-edit me-2"></i>Contenu de la leçon (HTML)
+                            </h5>
+                            
+                            <!-- Instructions Card -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Workflow Simplicime (100% Garanti)</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ol class="mb-3">
+                                        <li>Créez votre leçon dans <strong>Google Docs</strong> ou <strong>Microsoft Word</strong></li>
+                                        <li>Copiez tout le contenu (Ctrl+A, Ctrl+C)</li>
+                                        <li>Allez sur <a href="https://wordtohtml.net" target="_blank" class="fw-bold">WordToHTML.net</a></li>
+                                        <li>Collez, convertissez, copiez l'HTML généré</li>
+                                        <li>Utilisez la <strong>Commande Magique</strong> ci-dessous avec DeepSeek AI</li>
+                                        <li>Collez l'HTML corrigé dans le champ ci-dessous</li>
+                                        <li>Enregistrez votre leçon</li>
+                                    </ol>
+                                    
+                                    <div class="alert alert-info mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>Important :</strong> Ce système accepte maintenant le HTML formaté. 
+                                        Les couleurs, polices, listes et styles seront préservés.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Magic Command Card -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-primary text-white">
+                                    <h6 class="mb-0"><i class="fas fa-magic me-2"></i>Commande Magique pour DeepSeek AI</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <strong>Étape cruciale :</strong> Utilisez cette commande pour corriger l'HTML de WordToHTML.net
+                                    </div>
+                                    
+                                    <div class="bg-dark text-light p-3 rounded mb-3" style="font-family: 'Courier New', monospace; font-size: 14px;">
+                                        Corrige cet HTML de WordToHTML.net pour une leçon éducative :<br><br>
+                                        1. Supprime les paragraphes vides et les balises &lt;br&gt; excessives<br>
+                                        2. Corrige les &lt;p&gt; à l'intérieur des &lt;li&gt;<br>
+                                        3. Assure que les listes numérotées s'affichent correctement<br>
+                                        4. Garde TOUS les styles (couleurs, polices, espacements)<br>
+                                        5. Retourne un HTML propre et valide<br><br>
+                                        HTML à corriger :<br><br>
+                                        [COLLE_TON_HTML_ICI]
+                                    </div>
+                                    
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-primary" onclick="copyMagicCommand()">
+                                            <i class="fas fa-copy me-2"></i>Copier la Commande Magique
+                                        </button>
+                                        <a href="https://chat.deepseek.com/" target="_blank" class="btn btn-outline-primary">
+                                            <i class="fas fa-external-link-alt me-2"></i>Ouvrir DeepSeek AI
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Content Field -->
+                            <div class="mb-3">
+                                <label for="content" class="form-label required">
+                                    <i class="fas fa-code me-2"></i>Contenu HTML <span class="text-danger">*</span>
+                                </label>
+                                <textarea class="form-control" id="content" name="content" rows="12" 
+                                          placeholder="Collez votre HTML corrigé ici..."
+                                          style="font-family: 'Courier New', monospace; font-size: 14px;" required></textarea>
+                                <div class="form-text">
+                                    Collez l'HTML généré par WordToHTML.net et corrigé par DeepSeek AI. 
+                                    Le contenu sera affiché avec mise en forme complète.
+                                </div>
+                            </div>
+                            
+                            <!-- Preview Button -->
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-outline-primary" id="preview-btn">
+                                    <i class="fas fa-eye me-2"></i>Aperçu du contenu
+                                </button>
+                                <small class="text-muted ms-2">Cliquez pour voir comment le contenu apparaîtra aux étudiants</small>
+                            </div>
+                            
+                            <!-- Preview Area -->
+                            <div class="card d-none mb-4" id="preview-card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-desktop me-2"></i>Aperçu</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="preview-content" class="lesson-content-preview">
+                                        <!-- Preview will appear here -->
+                                    </div>
+                                    <div class="alert alert-info mt-3 mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Aperçu approximatif. L'affichage final peut varier légèrement.
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
@@ -202,6 +293,30 @@ if ($lesson_id <= 0) {
     <!-- Edit Lesson JavaScript -->
     <script>
     <?php include 'edit_lesson.js'; ?>
+    </script>
+    
+    <!-- Magic Command Copy Function (Added from add_lesson.php) -->
+    <script>
+    function copyMagicCommand() {
+        const command = `Corrige cet HTML de WordToHTML.net pour une leçon éducative :
+
+1. Supprime les paragraphes vides et les balises <br> excessives
+2. Corrige les <p> à l'intérieur des <li>
+3. Assure que les listes numérotées s'affichent correctement
+4. Garde TOUS les styles (couleurs, polices, espacements)
+5. Retourne un HTML propre et valide
+
+HTML à corriger :
+
+[COLLE_TON_HTML_ICI]`;
+        
+        navigator.clipboard.writeText(command).then(() => {
+            alert('✓ Commande magique copiée !\n\nCollez-la dans DeepSeek AI, remplacez [COLLE_TON_HTML_ICI] par votre HTML, et collez le résultat corrigé dans le champ ci-dessus.');
+        }).catch(err => {
+            console.error('Erreur de copie:', err);
+            alert('Erreur de copie. Veuillez copier manuellement le texte en surbrillance.');
+        });
+    }
     </script>
 </body>
 </html>

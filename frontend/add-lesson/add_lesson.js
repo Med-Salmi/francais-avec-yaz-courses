@@ -1,6 +1,6 @@
 /**
  * add_lesson.js - Add Lesson page JavaScript
- * REAL implementation with API integration
+ * UPDATED: Now includes HTML preview functionality
  */
 
 // API Base URLs
@@ -33,6 +33,9 @@ async function checkAuthAndLoadPage() {
 
       // Setup form submission
       setupFormSubmission();
+
+      // Setup HTML preview functionality
+      setupHTMLPreview();
     } else {
       // Not authenticated, redirect to login
       window.location.href = "/?page=login";
@@ -116,6 +119,41 @@ function populateCategoryDropdown(selectElement, categoriesData) {
   });
 }
 
+// Function to setup HTML preview functionality
+function setupHTMLPreview() {
+  const previewBtn = document.getElementById("preview-btn");
+  const previewCard = document.getElementById("preview-card");
+  const previewContent = document.getElementById("preview-content");
+  const contentField = document.getElementById("content");
+
+  if (previewBtn && contentField) {
+    previewBtn.addEventListener("click", function () {
+      const html = contentField.value.trim();
+      if (html) {
+        // Show preview with formatted HTML
+        previewContent.innerHTML = html;
+        previewCard.classList.remove("d-none");
+
+        // Apply additional formatting classes for preview
+        previewContent.classList.add("lesson-content-preview");
+
+        // Scroll to preview
+        previewCard.scrollIntoView({ behavior: "smooth" });
+      } else {
+        showError("Veuillez d'abord saisir du contenu HTML.");
+        contentField.focus();
+      }
+    });
+
+    // Close preview when clicking outside (optional)
+    document.addEventListener("click", function (event) {
+      if (!previewCard.contains(event.target) && event.target !== previewBtn) {
+        previewCard.classList.add("d-none");
+      }
+    });
+  }
+}
+
 // Function to setup form submission
 function setupFormSubmission() {
   const form = document.getElementById("addLessonForm");
@@ -171,6 +209,12 @@ function setupFormSubmission() {
         // Clear form after successful submission (optional)
         // form.reset();
 
+        // Hide preview if visible
+        const previewCard = document.getElementById("preview-card");
+        if (previewCard) {
+          previewCard.classList.add("d-none");
+        }
+
         // Redirect to manage lessons page after 3 seconds
         setTimeout(() => {
           window.location.href = "/?page=manage-lessons&added=1";
@@ -198,6 +242,18 @@ function setupFormSubmission() {
   // Reset button handler
   if (resetBtn) {
     resetBtn.addEventListener("click", function () {
+      // Hide preview if visible
+      const previewCard = document.getElementById("preview-card");
+      if (previewCard) {
+        previewCard.classList.add("d-none");
+      }
+
+      // Clear preview content
+      const previewContent = document.getElementById("preview-content");
+      if (previewContent) {
+        previewContent.innerHTML = "";
+      }
+
       hideAllAlerts();
     });
   }
@@ -214,30 +270,52 @@ function setupFormSubmission() {
     });
   });
 
-  // Add character counter for content
+  // Enhanced character counter for HTML content
   const contentField = document.getElementById("content");
   if (contentField) {
-    // Create character counter
-    const counter = document.createElement("div");
-    counter.className = "form-text text-end";
-    counter.id = "char-counter";
-    counter.textContent = contentField.value.length + " caractères";
+    // Create character counter (if not exists)
+    let counter = document.getElementById("char-counter");
+    if (!counter) {
+      counter = document.createElement("div");
+      counter.className = "form-text text-end";
+      counter.id = "char-counter";
+      counter.textContent = "0 caractères";
 
-    // Insert after content field
-    contentField.parentNode.insertBefore(counter, contentField.nextSibling);
+      // Insert after content field
+      contentField.parentNode.insertBefore(counter, contentField.nextSibling);
+    }
 
     // Update counter on input
     contentField.addEventListener("input", function () {
-      const charCount = this.value.length;
-      counter.textContent = `${charCount} caractères`;
+      const rawText = this.value;
+      const charCount = rawText.length;
 
-      // Change color based on count
-      if (charCount < 50) {
-        counter.style.color = "#dc3545"; // red
-      } else if (charCount < 100) {
-        counter.style.color = "#ffc107"; // yellow
+      // Count HTML tags (simple regex, may not catch all edge cases)
+      const htmlTags = (rawText.match(/<[^>]*>/g) || []).length;
+
+      // Calculate text-only length (without tags)
+      const textOnly = rawText.replace(/<[^>]*>/g, "");
+      const textOnlyCount = textOnly.length;
+
+      // Update counter display
+      counter.innerHTML = `
+        <span class="text-primary">${charCount} caractères total</span>
+        <span class="text-muted"> | ${textOnlyCount} caractères texte</span>
+        <span class="text-success"> | ${htmlTags} balises HTML</span>
+      `;
+
+      // Change color based on content length
+      if (textOnlyCount < 50) {
+        counter.querySelector(".text-primary").style.color = "#dc3545"; // red
+      } else if (textOnlyCount < 100) {
+        counter.querySelector(".text-primary").style.color = "#ffc107"; // yellow
       } else {
-        counter.style.color = "#28a745"; // green
+        counter.querySelector(".text-primary").style.color = "#28a745"; // green
+      }
+
+      // Warn about too many HTML tags (optional)
+      if (htmlTags > 50) {
+        counter.innerHTML += `<span class="text-warning"> (Trop de balises HTML!)</span>`;
       }
     });
 
@@ -246,7 +324,7 @@ function setupFormSubmission() {
   }
 }
 
-// Function to validate form
+// Function to validate form (UPDATED for HTML content)
 function validateForm() {
   let isValid = true;
 
@@ -282,15 +360,30 @@ function validateForm() {
     isValid = false;
   }
 
-  // Validate content
+  // Validate content (text without HTML tags should be at least 50 chars)
   if (!content) {
     showError("Le contenu est obligatoire");
     document.getElementById("content").classList.add("is-invalid");
     isValid = false;
-  } else if (content.length < 50) {
-    showError("Le contenu doit contenir au moins 50 caractères");
-    document.getElementById("content").classList.add("is-invalid");
-    isValid = false;
+  } else {
+    // Remove HTML tags to check actual text length
+    const textOnly = content.replace(/<[^>]*>/g, "");
+    if (textOnly.length < 50) {
+      showError(
+        "Le contenu doit contenir au moins 50 caractères de texte (sans compter les balises HTML)"
+      );
+      document.getElementById("content").classList.add("is-invalid");
+      isValid = false;
+    }
+
+    // Basic HTML validation (optional warning only)
+    const unbalancedTags = checkUnbalancedHTMLTags(content);
+    if (unbalancedTags > 0) {
+      showError(
+        `Attention: ${unbalancedTags} balise(s) HTML non fermée(s). Vérifiez votre code HTML.`
+      );
+      // Don't fail validation for this, just warn
+    }
   }
 
   // Validate video URL format if provided
@@ -301,6 +394,38 @@ function validateForm() {
   }
 
   return isValid;
+}
+
+// Helper function to check for unbalanced HTML tags (warning only)
+function checkUnbalancedHTMLTags(html) {
+  const tagRegex = /<\/?([a-z][a-z0-9]*)[^>]*>/gi;
+  const tags = html.match(tagRegex) || [];
+
+  const stack = [];
+  let unbalancedCount = 0;
+
+  tags.forEach((tag) => {
+    const isClosing = tag.startsWith("</");
+    const tagName = tag
+      .replace(/<\/?([a-z][a-z0-9]*)[^>]*>/i, "$1")
+      .toLowerCase();
+
+    if (!isClosing) {
+      // Opening tag
+      stack.push(tagName);
+    } else {
+      // Closing tag
+      const lastTag = stack.pop();
+      if (lastTag !== tagName) {
+        unbalancedCount++;
+      }
+    }
+  });
+
+  // Add remaining unclosed tags
+  unbalancedCount += stack.length;
+
+  return unbalancedCount;
 }
 
 // Function to setup sidebar navigation
