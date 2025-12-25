@@ -206,21 +206,26 @@ function displayCategories(categories, level) {
     const col = document.createElement("div");
     col.className = "col-md-6 col-lg-4 mb-4";
     col.innerHTML = `
-            <div class="card category-card h-100">
-                <div class="card-body text-center">
-                    <div class="category-icon ${categoryClass}">
-                        <i class="${icon} text-white"></i>
-                    </div>
-                    <h4 class="category-title">${category.name}</h4>
-                    <p class="text-muted mb-3">${category.description}</p>
-                    <button class="btn btn-primary mt-3 view-lessons-btn" 
-                            data-category-id="${category.id}" 
-                            data-category-name="${category.name}">
-                        <i class="fas fa-book-open me-2"></i>Voir les leçons
-                    </button>
-                </div>
+    <div class="card category-card h-100">
+        <div class="card-body text-center">
+            <div class="category-icon ${categoryClass}">
+                <i class="${icon} text-white"></i>
             </div>
-        `;
+            <h4 class="category-title">${category.name}</h4>
+            <p class="text-muted mb-3">${category.description}</p>
+            ${
+              !(category.name === "Langue" && level === "1ere-annee-bac")
+                ? "<br>"
+                : ""
+            }
+            <button class="btn btn-primary mt-3 view-lessons-btn" 
+                    data-category-id="${category.id}" 
+                    data-category-name="${category.name}">
+                <i class="fas fa-book-open me-2"></i>Voir les leçons
+            </button>
+        </div>
+    </div>
+`;
 
     container.appendChild(col);
   });

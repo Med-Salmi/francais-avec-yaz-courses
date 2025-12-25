@@ -4,11 +4,12 @@
 }
 
 .main-header {
-  background: linear-gradient(
+  /* background: linear-gradient(
     135deg,
     var(--primary-color),
     var(--secondary-color)
-  );
+  ); */
+  background-color: #66ffff;
   color: white;
   padding: 1rem 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);

@@ -10,7 +10,7 @@
             <div class="col-lg-8">
                 <h1>Maîtrisez la Langue Française</h1>
                 <p>
-                    Plateforme éducative complète pour les étudiants de Tronc Commun
+                    Plateforme éducative complète pour les élèves de Tronc Commun
                     et 1ère Année Bac. Accédez à des cours structurés, des quiz
                     interactifs et des ressources d'examen.
                 </p>

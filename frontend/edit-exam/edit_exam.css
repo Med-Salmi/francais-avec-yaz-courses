@@ -547,3 +547,66 @@ textarea.form-control {
     padding: 1rem;
   }
 }
+
+/* === FIX FOR CURRENT FILE DISPLAY OVERFLOW === */
+/* Better current file layout */
+.current-file .d-flex {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.current-file .d-flex > div:first-child {
+  flex: 1;
+  min-width: 0; /* Crucial for text truncation */
+  overflow: hidden;
+}
+
+/* Truncate long file names */
+.current-file strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* File link truncation */
+.current-file small a {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Delete checkbox stays on same line */
+.current-file .form-check {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-top: 0.25rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .current-file .d-flex {
+    flex-direction: column;
+  }
+  
+  .current-file .d-flex > div:first-child {
+    width: 100%;
+  }
+  
+  .current-file .form-check {
+    margin-left: 0;
+    margin-top: 0.75rem;
+    align-self: flex-start;
+  }
+  
+  .current-file strong {
+    white-space: normal;
+    word-break: break-word;
+  }
+}

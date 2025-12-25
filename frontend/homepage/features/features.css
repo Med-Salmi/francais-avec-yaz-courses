@@ -48,6 +48,10 @@
   font-weight: 700;
 }
 
+.text-muted {
+  text-align: justify;
+}
+
 /* Responsive adjustments for features */
 @media (max-width: 768px) {
   .features {

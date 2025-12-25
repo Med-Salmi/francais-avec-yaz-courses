@@ -11,7 +11,7 @@
                 <h5>Français Avec Yaz</h5>
                 <p>
                     Plateforme éducative dédiée à l'enseignement de la langue
-                    française pour les étudiants marocains.
+                    française pour les élèves marocains.
                 </p>
                 <p><i class="fas fa-envelope me-2"></i>yzaghlamane2@gmail.com</p>
             </div>
@@ -49,7 +49,7 @@
             </p>
             <p>
                 Conçu avec <i class="fas fa-heart text-danger"></i> pour les
-                étudiants marocains
+                élèves marocains
             </p>
         </div>
     </div>
